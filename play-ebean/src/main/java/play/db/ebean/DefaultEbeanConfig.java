@@ -67,12 +67,13 @@ public class DefaultEbeanConfig implements EbeanConfig {
 
             Map<String, ServerConfig> serverConfigs = new HashMap<>();
 
-            for (Map.Entry<String, List<String>> entry: config.getDatasourceModels().entrySet()) {
+            for (Map.Entry<String, List<String>> entry : config.getDatasourceModels().entrySet()) {
                 String key = entry.getKey();
 
                 ServerConfig serverConfig = new ServerConfig();
                 serverConfig.setName(key);
                 serverConfig.loadFromProperties();
+                serverConfig.setH2ProductionMode(true);  // Since Ebean 9.1.1: Don't override Evolution
 
                 setServerConfigDataSource(key, serverConfig);
 
@@ -92,7 +93,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
         private void setServerConfigDataSource(String key, ServerConfig serverConfig) {
             try {
                 serverConfig.setDataSource(new WrappingDatasource(dbApi.getDatabase(key).getDataSource()));
-            } catch(Exception e) {
+            } catch (Exception e) {
                 throw configuration.reportError(
                     "ebean." + key,
                     e.getMessage(),
@@ -102,7 +103,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
         }
 
         private void addModelClassesToServerConfig(String key, ServerConfig serverConfig, Set<String> classes) {
-            for (String clazz: classes) {
+            for (String clazz : classes) {
                 try {
                     serverConfig.addClass(Class.forName(clazz, true, environment.classLoader()));
                 } catch (Throwable e) {
@@ -120,7 +121,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
             entry.getValue().forEach(load -> {
                 load = load.trim();
                 if (load.endsWith(".*")) {
-                    classes.addAll(play.libs.Classpath.getTypes(environment, load.substring(0, load.length()-2)));
+                    classes.addAll(play.libs.Classpath.getTypes(environment, load.substring(0, load.length() - 2)));
                 } else {
                     classes.add(load);
                 }
@@ -134,17 +135,17 @@ public class DefaultEbeanConfig implements EbeanConfig {
          */
         static class WrappingDatasource implements javax.sql.DataSource {
 
-            public java.sql.Connection wrap(java.sql.Connection connection) throws java.sql.SQLException {
-                connection.setAutoCommit(false);
-                return connection;
-            }
+            final javax.sql.DataSource wrapped;
 
             // --
 
-            final javax.sql.DataSource wrapped;
-
             public WrappingDatasource(javax.sql.DataSource wrapped) {
                 this.wrapped = wrapped;
+            }
+
+            public java.sql.Connection wrap(java.sql.Connection connection) throws java.sql.SQLException {
+                connection.setAutoCommit(false);
+                return connection;
             }
 
             public java.sql.Connection getConnection() throws java.sql.SQLException {
@@ -159,12 +160,12 @@ public class DefaultEbeanConfig implements EbeanConfig {
                 return wrapped.getLoginTimeout();
             }
 
-            public java.io.PrintWriter getLogWriter() throws java.sql.SQLException {
-                return wrapped.getLogWriter();
-            }
-
             public void setLoginTimeout(int seconds) throws java.sql.SQLException {
                 wrapped.setLoginTimeout(seconds);
+            }
+
+            public java.io.PrintWriter getLogWriter() throws java.sql.SQLException {
+                return wrapped.getLogWriter();
             }
 
             public void setLogWriter(java.io.PrintWriter out) throws java.sql.SQLException {

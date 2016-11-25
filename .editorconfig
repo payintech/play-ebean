@@ -11,6 +11,9 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 spaces_around_operators = true
 
+[*.java]
+indent_size = 4
+
 [*.md]
 trim_trailing_whitespace = false
 indent_size = 2
