@@ -9,34 +9,25 @@ import sbt.inc._
 
 import scala.util.control.NonFatal
 
+/**
+  * PlayEbean.
+  *
+  * @since 14.11.27
+  */
 object PlayEbean extends AutoPlugin {
-
-  object autoImport {
-    val playEbeanModels = taskKey[Seq[String]]("The packages that should be searched for ebean models to enhance.")
-    val playEbeanVersion = settingKey[String]("The version of Play ebean that should be added to the library dependencies.")
-    val playEbeanDebugLevel = settingKey[Int]("The debug level to use for the ebean agent. The higher, the more debug is output, with 9 being the most. -1 turns debugging off.")
-    val playEbeanAgentArgs = taskKey[Map[String, String]]("The arguments to pass to the agent.")
-  }
-
-  import autoImport._
 
   // Must require PlayEnhancer to make sure it runs before we do
   override def requires = PlayEnhancer
 
-  override def trigger = noTrigger
+  import autoImport._
+
+  override def trigger: PluginTrigger = noTrigger
 
   override def projectSettings = inConfig(Compile)(scopedSettings) ++ unscopedSettings
 
   def scopedSettings = Seq(
     playEbeanModels <<= configuredEbeanModels,
     manipulateBytecode <<= ebeanEnhance
-  )
-
-  def unscopedSettings = Seq(
-    playEbeanDebugLevel := -1,
-    playEbeanAgentArgs := Map("debug" -> playEbeanDebugLevel.value.toString),
-    playEbeanVersion := readResourceProperty("play-ebean.version.properties", "play-ebean.version"),
-    libraryDependencies += "com.typesafe.play" %% "play-ebean" % playEbeanVersion.value
   )
 
   def ebeanEnhance: Def.Initialize[Task[Compiler.CompileResult]] = Def.task {
@@ -79,15 +70,16 @@ object PlayEbean extends AutoPlugin {
     val allProducts = analysis.relations.allProducts
 
     /**
-     * Updates stamp of product (class file) by preserving the type of a passed stamp.
-     * This way any stamp incremental compiler chooses to use to mark class files will
-     * be supported.
-     */
+      * Updates stamp of product (class file) by preserving the type of a passed stamp.
+      * This way any stamp incremental compiler chooses to use to mark class files will
+      * be supported.
+      */
     def updateStampForClassFile(classFile: File, stamp: Stamp): Stamp = stamp match {
       case _: Exists => Stamp.exists(classFile)
       case _: LastModified => Stamp.lastModified(classFile)
       case _: Hash => Stamp.hash(classFile)
     }
+
     // Since we may have modified some of the products of the incremental compiler, that is, the compiled template
     // classes and compiled Java sources, we need to update their timestamps in the incremental compiler, otherwise
     // the incremental compiler will see that they've changed since it last compiled them, and recompile them.
@@ -103,10 +95,10 @@ object PlayEbean extends AutoPlugin {
     result.copy(analysis = updatedAnalysis)
   }
 
-
   private def configuredEbeanModels = Def.task {
+    import java.util.{List => JList, Map => JMap}
+
     import collection.JavaConverters._
-    import java.util.{ Map => JMap, List => JList }
 
     // Creates a classloader with all the dependencies and all the resources, from there we can use the play ebean
     // code to load the config as it would be loaded in production
@@ -128,6 +120,7 @@ object PlayEbean extends AutoPlugin {
             }
             cloned
           }
+
           throw clone(e)
       } finally {
         classLoader.close()
@@ -147,12 +140,32 @@ object PlayEbean extends AutoPlugin {
     }
   }
 
+  def unscopedSettings = Seq(
+    playEbeanDebugLevel := -1,
+    playEbeanAgentArgs := Map("debug" -> playEbeanDebugLevel.value.toString),
+    playEbeanVersion := readResourceProperty("play-ebean.version.properties", "play-ebean.version"),
+    libraryDependencies += "com.typesafe.play" %% "play-ebean" % playEbeanVersion.value
+  )
+
   private def readResourceProperty(resource: String, property: String): String = {
     val props = new java.util.Properties
     val stream = getClass.getClassLoader.getResourceAsStream(resource)
-    try { props.load(stream) }
-    catch { case e: Exception => }
-    finally { if (stream ne null) stream.close }
+    try {
+      props.load(stream)
+    }
+    catch {
+      case e: Exception =>
+    }
+    finally {
+      if (stream ne null) stream.close()
+    }
     props.getProperty(property)
+  }
+
+  object autoImport {
+    val playEbeanModels = taskKey[Seq[String]]("The packages that should be searched for ebean models to enhance.")
+    val playEbeanVersion = settingKey[String]("The version of Play ebean that should be added to the library dependencies.")
+    val playEbeanDebugLevel = settingKey[Int]("The debug level to use for the ebean agent. The higher, the more debug is output, with 9 being the most. -1 turns debugging off.")
+    val playEbeanAgentArgs = taskKey[Map[String, String]]("The arguments to pass to the agent.")
   }
 }

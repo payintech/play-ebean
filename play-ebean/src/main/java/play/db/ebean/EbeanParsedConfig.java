@@ -13,39 +13,54 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The raw parsed config from Ebean, as opposed to the EbeanConfig which actually requires starting database connection
- * pools to create.
+ * The raw parsed config from Ebean, as opposed to the EbeanConfig which
+ * actually requires starting database connection pools to create.
+ *
+ * @since 15.04.30
  */
 public class EbeanParsedConfig {
 
+    /**
+     * @since 15.04.30
+     */
     private final String defaultDatasource;
+
+    /**
+     * @since 15.04.30
+     */
     private final Map<String, List<String>> datasourceModels;
 
-    public EbeanParsedConfig(String defaultDatasource, Map<String, List<String>> datasourceModels) {
+    /**
+     * Build default instance.
+     *
+     * @param defaultDatasource The datasource name
+     * @param datasourceModels  A list of models linked to this datasource
+     * @since 15.04.30
+     */
+    public EbeanParsedConfig(final String defaultDatasource, final Map<String, List<String>> datasourceModels) {
         this.defaultDatasource = defaultDatasource;
         this.datasourceModels = datasourceModels;
     }
 
-    public String getDefaultDatasource() {
-        return defaultDatasource;
-    }
-
-    public Map<String, List<String>> getDatasourceModels() {
-        return datasourceModels;
-    }
-
-    public static EbeanParsedConfig parseFromConfig(Configuration configuration) {
-        Config config = configuration.underlying();
-        Config playEbeanConfig = config.getConfig("play.ebean");
-        String defaultDatasource = playEbeanConfig.getString("defaultDatasource");
-        String ebeanConfigKey = playEbeanConfig.getString("config");
-
-        Map<String, List<String>> datasourceModels = new HashMap<>();
+    /**
+     * Retrieve a {@code EbeanParsedConfig} instance from a PlayFramework
+     * {@code Configuration} instance.
+     *
+     * @param configuration The configuration to parse
+     * @return A new instance of {@code EbeanParsedConfig}
+     * @since 15.04.30
+     */
+    public static EbeanParsedConfig parseFromConfig(final Configuration configuration) {
+        final Config config = configuration.underlying();
+        final Config playEbeanConfig = config.getConfig("play.ebean");
+        final String defaultDatasource = playEbeanConfig.getString("defaultDatasource");
+        final String ebeanConfigKey = playEbeanConfig.getString("config");
+        final Map<String, List<String>> datasourceModels = new HashMap<>();
 
         if (config.hasPath(ebeanConfigKey)) {
-            Config ebeanConfig = config.getConfig(ebeanConfigKey);
+            final Config ebeanConfig = config.getConfig(ebeanConfigKey);
             ebeanConfig.root().forEach((key, raw) -> {
-                List<String> models;
+                final List<String> models;
                 if (raw.valueType() == ConfigValueType.STRING) {
                     // Support legacy comma separated string
                     models = Arrays.asList(((String) raw.unwrapped()).split(","));
@@ -57,5 +72,25 @@ public class EbeanParsedConfig {
             });
         }
         return new EbeanParsedConfig(defaultDatasource, datasourceModels);
+    }
+
+    /**
+     * Return default datasource name.
+     *
+     * @return Default datasource name
+     * @since 15.04.30
+     */
+    public String getDefaultDatasource() {
+        return this.defaultDatasource;
+    }
+
+    /**
+     * Return all datasource models.
+     *
+     * @return All datasource models
+     * @since 15.04.30
+     */
+    public Map<String, List<String>> getDatasourceModels() {
+        return this.datasourceModels;
     }
 }

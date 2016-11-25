@@ -11,16 +11,20 @@ import java.util.function.Function;
 
 /**
  * Given a classloader, load the models configuration.
+ * <p>
+ * This is used by the ebean sbt plugin to get the same
+ * models configuration that will be loaded by the app.
+ * </p>
  *
- * This is used by the ebean sbt plugin to get the same models configuration that will be loaded by the app.
+ * @since 15.04.30
  */
 public class ModelsConfigLoader implements Function<ClassLoader, Map<String, List<String>>> {
 
     @Override
-    public  Map<String, List<String>> apply(ClassLoader classLoader) {
+    public Map<String, List<String>> apply(final ClassLoader classLoader) {
         // Using TEST mode is the only way to load configuration without failing if application.conf doesn't exist
-        Environment env = new Environment(new File("."), classLoader, Mode.TEST);
-        Configuration config = Configuration.load(env);
+        final Environment env = new Environment(new File("."), classLoader, Mode.TEST);
+        final Configuration config = Configuration.load(env);
         return EbeanParsedConfig.parseFromConfig(config).getDatasourceModels();
     }
 }

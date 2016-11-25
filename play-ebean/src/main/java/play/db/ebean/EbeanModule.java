@@ -12,15 +12,20 @@ import scala.collection.Seq;
 
 /**
  * Injection module with default Ebean components.
+ *
+ * @since 14.11.27
  */
 public class EbeanModule extends Module {
 
     @Override
-    public Seq<Binding<?>> bindings(Environment environment, Configuration configuration) {
+    public Seq<Binding<?>> bindings(final Environment environment, final Configuration configuration) {
         return seq(
-            bind(DynamicEvolutions.class).to(EbeanDynamicEvolutions.class).eagerly(),
-            bind(EbeanConfig.class).toProvider(DefaultEbeanConfig.EbeanConfigParser.class).eagerly()
+            bind(DynamicEvolutions.class)
+                .to(EbeanDynamicEvolutions.class)
+                .eagerly(),
+            bind(EbeanConfig.class)
+                .toProvider(DefaultEbeanConfig.EbeanConfigParser.class)
+                .eagerly()
         );
     }
-
 }

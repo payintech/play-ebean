@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
 
 /**
  * Wraps the annotated action in an Ebean transaction.
+ *
+ * @since 14.11.27
  */
 @With(TransactionalAction.class)
 @Target({ElementType.TYPE, ElementType.METHOD})
