@@ -144,8 +144,11 @@ public class EbeanDynamicEvolutions extends DynamicEvolutions {
                             }
 
                             if (content.isEmpty() || content.startsWith("# --- Created by Ebean DDL")) {
-                                if (!this.environment.getFile("conf/evolutions/" + key).mkdirs()) {
-                                    throw new RuntimeException("Can't create 'Evolution' directory");
+                                final File dirToCreate = this.environment.getFile("conf/evolutions/" + key);
+                                if (!dirToCreate.exists()) {
+                                    if (!this.environment.getFile("conf/evolutions/" + key).mkdirs()) {
+                                        throw new RuntimeException("Can't create 'Evolution' directory");
+                                    }
                                 }
                                 if (!content.equals(evolutionScript)) {
                                     Files.write(
