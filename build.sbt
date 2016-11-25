@@ -12,7 +12,6 @@ lazy val root = project
 lazy val core = project
   .in(file("play-ebean"))
   .enablePlugins(Playdoc, PlayLibrary)
-  .settings(jacoco.settings: _*)
   .settings(
     name := "play-ebean",
     libraryDependencies ++= playEbeanDeps,
