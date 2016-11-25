@@ -1,9 +1,5 @@
 import sbt.inc.Analysis
 
-val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.5.6"))
-
-val PlayEnhancerVersion = "1.1.0"
-
 lazy val root = project
   .in(file("."))
   .enablePlugins(PlayRootProject)
@@ -25,8 +21,7 @@ lazy val core = project
       (compile in Compile).value,
       (classDirectory in Compile).value,
       "play/db/ebean/**"
-    ),
-    jacoco.reportFormats in jacoco.Config := Seq(de.johoop.jacoco4sbt.XMLReport(encoding = "utf-8"))
+    )
   )
 
 lazy val plugin = project
@@ -45,6 +40,10 @@ lazy val plugin = project
       val () = (publishLocal in core).value
     }
   )
+val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.5.10"))
+val PlayEnhancerVersion = "1.1.0"
+val EbeanVersion = "8.4.1"
+val EbeanORMAgentVersion = "8.1.1"
 
 playBuildRepoName in ThisBuild := "play-ebean"
 // playBuildExtraTests := {
@@ -55,24 +54,20 @@ playBuildExtraPublish := {
 }
 
 // Dependencies
-
 def playEbeanDeps = Seq(
   "com.typesafe.play" %% "play-java-jdbc" % PlayVersion,
   "com.typesafe.play" %% "play-jdbc-evolutions" % PlayVersion,
-  "org.avaje.ebean" % "ebean" % "8.4.1",
-  avajeEbeanormAgent,
+  "org.avaje.ebean" % "ebean" % EbeanVersion,
+  "org.avaje.ebeanorm" % "avaje-ebeanorm-agent" % EbeanORMAgentVersion,
   "com.typesafe.play" %% "play-test" % PlayVersion % Test
 )
 
 def sbtPlayEbeanDeps = Seq(
-  avajeEbeanormAgent,
+  "org.avaje.ebeanorm" % "avaje-ebeanorm-agent" % EbeanORMAgentVersion,
   "com.typesafe" % "config" % "1.3.0"
 )
 
-def avajeEbeanormAgent = "org.avaje.ebeanorm" % "avaje-ebeanorm-agent" % "8.1.1"
-
 // Ebean enhancement
-
 def enhanceEbeanClasses(classpath: Classpath, analysis: Analysis, classDirectory: File, pkg: String): Analysis = {
   // Ebean (really hacky sorry)
   val cp = classpath.map(_.data.toURI.toURL).toArray :+ classDirectory.toURI.toURL
@@ -86,7 +81,6 @@ def enhanceEbeanClasses(classpath: Classpath, analysis: Analysis, classDirectory
 }
 
 // Version file
-
 def generateVersionFile = Def.task {
   val version = (Keys.version in core).value
   val file = (resourceManaged in Compile).value / "play-ebean.version.properties"

@@ -1,28 +1,24 @@
 language: scala
 sudo: false
+
 jdk:
   - oraclejdk8
+
 env:
-  - SCRIPT="sbt jacoco:cover"
   - SCRIPT="sbt publishLocal plugin/test plugin/scripted"
   - SCRIPT="cd docs && sbt test"
   - SCRIPT="cd docs && sbt validateDocs evaluateSbtFiles"
+
 script:
   - $SCRIPT
+
 cache:
   directories:
     - $HOME/.ivy2/cache
+
 before_cache:
   # Ensure changes to the cache aren't persisted
   - rm -rf $HOME/.ivy2/cache/com.typesafe.play/play-ebean*
   - rm -rf $HOME/.ivy2/cache/scala_*/sbt_*/com.typesafe.sbt/sbt-play-ebean
   # Delete all ivydata files since ivy touches them on each build
   - find $HOME/.ivy2/cache -name "ivydata-*.properties" | xargs rm
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/d2c8a242a2615f659595
-    on_success: always
-    on_failure: always
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
