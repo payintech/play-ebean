@@ -1,5 +1,5 @@
 //#add-sbt-plugin
-addSbtPlugin("com.typesafe.sbt" % "sbt-play-ebean" % "3.0.0")
+addSbtPlugin("com.payintech" % "sbt-play-ebean" % "16.11")
 //#add-sbt-plugin
 
 //#enable-plugin

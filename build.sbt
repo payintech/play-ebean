@@ -1,3 +1,5 @@
+import com.typesafe.sbt.SbtPgp.autoImportImpl.usePgpKeyHex
+import sbt.Keys.{publishMavenStyle, publishTo}
 import sbt.inc.Analysis
 
 lazy val root = project
@@ -6,7 +8,42 @@ lazy val root = project
   .aggregate(core)
   .settings(
     name := "play-ebean-root",
-    releaseCrossBuild := false
+    organization := "com.payintech",
+    homepage := Some(url(s"https://github.com/payintech/play-ebean")),
+    releaseCrossBuild := false,
+    publishMavenStyle := false
+  )
+  .settings(
+    useGpg := true,
+    usePgpKeyHex("B4B939B5"),
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value)
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
+    publishMavenStyle := true,
+    publishArtifact in Test := false,
+    pomIncludeRepository := { _ => false },
+    pomExtra := <licenses>
+      <license>
+        <name>Apache License 2.0</name>
+        <url>https://opensource.org/licenses/Apache-2.0</url>
+        <distribution>repo</distribution>
+      </license>
+    </licenses>
+      <scm>
+        <url>git@github.com:payintech/play-ebean.git</url>
+        <connection>scm:git:git@github.com:payintech/play-ebean.git</connection>
+      </scm>
+      <developers>
+        <developer>
+          <id>payintech</id>
+          <name>PayinTech Team</name>
+          <url>https://github.com/payintech</url>
+        </developer>
+      </developers>
   )
 
 lazy val core = project
@@ -14,6 +51,8 @@ lazy val core = project
   .enablePlugins(Playdoc, PlayLibrary)
   .settings(
     name := "play-ebean",
+    organization := "com.payintech",
+    homepage := Some(url(s"https://github.com/payintech/play-ebean")),
     libraryDependencies ++= playEbeanDeps,
     compile in Compile := enhanceEbeanClasses(
       (dependencyClasspath in Compile).value,
@@ -22,13 +61,44 @@ lazy val core = project
       "play/db/ebean/**"
     )
   )
+  .settings(
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value)
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
+    useGpg := true,
+    usePgpKeyHex("B4B939B5"),
+    publishMavenStyle := true,
+    publishArtifact in Test := false,
+    pomIncludeRepository := { _ => false },
+    pomExtra := <scm>
+      <url>git@github.com:payintech/play-ebean.git</url>
+      <connection>scm:git:git@github.com:payintech/play-ebean.git</connection>
+    </scm>
+      <developers>
+        <developer>
+          <id>playframework</id>
+          <name>Play Framework Team</name>
+          <url>https://github.com/playframework</url>
+        </developer>
+        <developer>
+          <id>payintech</id>
+          <name>PayinTech Team</name>
+          <url>https://github.com/payintech</url>
+        </developer>
+      </developers>
+  )
 
 lazy val plugin = project
   .in(file("sbt-play-ebean"))
   .enablePlugins(PlaySbtPlugin)
   .settings(
     name := "sbt-play-ebean",
-    organization := "com.typesafe.sbt",
+    organization := "com.payintech",
+    homepage := Some(url(s"https://github.com/payintech/play-ebean")),
     libraryDependencies ++= sbtPlayEbeanDeps,
     addSbtPlugin("com.typesafe.sbt" % "sbt-play-enhancer" % PlayEnhancerVersion),
     addSbtPlugin("com.typesafe.play" % "sbt-plugin" % PlayVersion),
@@ -38,6 +108,36 @@ lazy val plugin = project
       val () = publishLocal.value
       val () = (publishLocal in core).value
     }
+  )
+  .settings(
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value)
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
+    useGpg := true,
+    usePgpKeyHex("B4B939B5"),
+    publishMavenStyle := true,
+    publishArtifact in Test := false,
+    pomIncludeRepository := { _ => false },
+    pomExtra := <scm>
+      <url>git@github.com:payintech/play-ebean.git</url>
+      <connection>scm:git:git@github.com:payintech/play-ebean.git</connection>
+    </scm>
+      <developers>
+        <developer>
+          <id>playframework</id>
+          <name>Play Framework Team</name>
+          <url>https://github.com/playframework</url>
+        </developer>
+        <developer>
+          <id>payintech</id>
+          <name>PayinTech Team</name>
+          <url>https://github.com/payintech</url>
+        </developer>
+      </developers>
   )
 val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.5.10"))
 val PlayEnhancerVersion = "1.1.0"

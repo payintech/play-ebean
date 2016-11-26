@@ -144,7 +144,7 @@ object PlayEbean extends AutoPlugin {
     playEbeanDebugLevel := -1,
     playEbeanAgentArgs := Map("debug" -> playEbeanDebugLevel.value.toString),
     playEbeanVersion := readResourceProperty("play-ebean.version.properties", "play-ebean.version"),
-    libraryDependencies += "com.typesafe.play" %% "play-ebean" % playEbeanVersion.value
+    libraryDependencies += "com.payintech" %% "play-ebean" % playEbeanVersion.value
   )
 
   private def readResourceProperty(resource: String, property: String): String = {
