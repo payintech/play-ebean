@@ -141,8 +141,8 @@ lazy val plugin = project
   )
 val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.5.10"))
 val PlayEnhancerVersion = "1.1.0"
-val EbeanVersion = "9.1.2"
-val EbeanORMAgentVersion = "8.1.1"
+val EbeanVersion = "9.2.1"
+val EbeanAgentVersion = "8.2.1"
 
 playBuildRepoName in ThisBuild := "play-ebean"
 // playBuildExtraTests := {
@@ -157,12 +157,12 @@ def playEbeanDeps = Seq(
   "com.typesafe.play" %% "play-java-jdbc" % PlayVersion,
   "com.typesafe.play" %% "play-jdbc-evolutions" % PlayVersion,
   "org.avaje.ebean" % "ebean" % EbeanVersion,
-  "org.avaje.ebeanorm" % "avaje-ebeanorm-agent" % EbeanORMAgentVersion,
+  "org.avaje.ebean" % "ebean-agent" % EbeanAgentVersion,
   "com.typesafe.play" %% "play-test" % PlayVersion % Test
 )
 
 def sbtPlayEbeanDeps = Seq(
-  "org.avaje.ebeanorm" % "avaje-ebeanorm-agent" % EbeanORMAgentVersion,
+  "org.avaje.ebean" % "ebean-agent" % EbeanAgentVersion,
   "com.typesafe" % "config" % "1.3.0"
 )
 
