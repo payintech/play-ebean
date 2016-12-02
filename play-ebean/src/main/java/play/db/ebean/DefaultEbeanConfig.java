@@ -3,7 +3,10 @@
  */
 package play.db.ebean;
 
+import com.avaje.ebean.config.DocStoreConfig;
+import com.avaje.ebean.config.EncryptKeyManager;
 import com.avaje.ebean.config.ServerConfig;
+import com.typesafe.config.Config;
 import play.Configuration;
 import play.Environment;
 import play.db.DBApi;
@@ -11,7 +14,10 @@ import play.db.DBApi;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Ebean server configuration.
@@ -107,33 +113,117 @@ public class DefaultEbeanConfig implements EbeanConfig {
          * @since 14.11.27
          */
         public EbeanConfig parse() {
-            final EbeanParsedConfig config = EbeanParsedConfig.parseFromConfig(this.configuration);
             final Map<String, ServerConfig> serverConfigs = new HashMap<>();
+            final Config underliedConfiguration = this.configuration.underlying();
 
-            for (final Map.Entry<String, List<String>> entry : config.getDatasourceModels().entrySet()) {
-                final String key = entry.getKey();
+            if (underliedConfiguration.hasPathOrNull("ebean.servers")) {
+                final Config playEbeanSrvCfg = underliedConfiguration.getConfig("ebean.servers");
+                playEbeanSrvCfg.root().keySet().forEach(serverName -> {
+                    final Config ebeanServerConfig = playEbeanSrvCfg.getConfig(serverName);
+                    final ServerConfig serverConfig = new ServerConfig();
+                    serverConfig.setName(serverName);
+                    serverConfig.loadFromProperties();
+                    serverConfig.setH2ProductionMode(true);  // Since Ebean 9.1.1: Don't override Evolution
+                    if (serverName.compareTo("default") == 0) {
+                        serverConfig.setDefaultServer(true);
+                    }
 
-                final ServerConfig serverConfig = new ServerConfig();
-                serverConfig.setName(key);
-                serverConfig.loadFromProperties();
-                serverConfig.setH2ProductionMode(true);  // Since Ebean 9.1.1: Don't override Evolution
+                    if (ebeanServerConfig.hasPath("settings")) {
+                        try {
+                            final Config playEbeanSrvSettingsCfg = ebeanServerConfig.getConfig("settings");
+                            if (playEbeanSrvSettingsCfg.hasPath("onlyUseDocstore")) {
+                                if (playEbeanSrvSettingsCfg.getBoolean("onlyUseDocStore")) {
+                                    serverConfig.setDocStoreOnly(true);
+                                } else {
+                                    serverConfig.setDocStoreOnly(false);
+                                    this.setServerConfigDataSource(serverName, serverConfig);
+                                }
+                            } else {
+                                this.setServerConfigDataSource(serverName, serverConfig);
+                            }
+                            if (playEbeanSrvSettingsCfg.hasPath("encryptKeyManager")) {
+                                final EncryptKeyManager encryptKeyManager = (EncryptKeyManager) serverConfig
+                                    .getClassLoadConfig()
+                                    .newInstance(playEbeanSrvSettingsCfg.getString("encryptKeyManager"));
+                                serverConfig.setEncryptKeyManager(encryptKeyManager);
+                            }
+                        } catch (final Exception e) {
+                            throw this.configuration.reportError(
+                                "ebean.servers" + serverName + ".settings",
+                                e.getMessage(),
+                                e
+                            );
+                        }
+                    } else {
+                        serverConfig.setDocStoreOnly(false);
+                        this.setServerConfigDataSource(serverName, serverConfig);
+                    }
 
-                this.setServerConfigDataSource(key, serverConfig);
-                if (config.getDefaultDatasource().equals(key)) {
-                    serverConfig.setDefaultServer(true);
-                }
+                    if (ebeanServerConfig.hasPath("enhancement")) {
+                        final Set<String> classes = new HashSet<>();
+                        ebeanServerConfig.getStringList("enhancement").stream().map(String::trim).forEach(load -> {
+                            if (load.endsWith(".*")) {
+                                classes.addAll(
+                                    play.libs.Classpath
+                                        .getTypes(
+                                            this.environment,
+                                            load.substring(0, load.length() - 2)
+                                        )
+                                );
+                            } else {
+                                classes.add(load);
+                            }
+                        });
+                        this.addModelClassesToServerConfig(serverName, serverConfig, classes);
+                    }
 
-                final Set<String> classes = this.getModelClasses(entry);
-                this.addModelClassesToServerConfig(key, serverConfig, classes);
+                    if (ebeanServerConfig.hasPath("docstore")) {
+                        try {
+                            final Config playEbeanSrvDocStoreCfg = ebeanServerConfig.getConfig("docstore");
+                            final DocStoreConfig docStoreConfig = new DocStoreConfig();
+                            if (playEbeanSrvDocStoreCfg.hasPath("url")) {
+                                docStoreConfig.setUrl(playEbeanSrvDocStoreCfg.getString("url"));
+                            } else {
+                                docStoreConfig.setUrl("http://127.0.0.1:9200");
+                            }
+                            if (playEbeanSrvDocStoreCfg.hasPath("active")) {
+                                docStoreConfig.setActive(playEbeanSrvDocStoreCfg.getBoolean("active"));
+                            }
+                            if (playEbeanSrvDocStoreCfg.hasPath("generateMapping")) {
+                                docStoreConfig.setGenerateMapping(playEbeanSrvDocStoreCfg.getBoolean("generateMapping"));
+                            }
+                            if (playEbeanSrvDocStoreCfg.hasPath("dropCreate")) {
+                                docStoreConfig.setDropCreate(playEbeanSrvDocStoreCfg.getBoolean("dropCreate"));
+                            }
+                            if (playEbeanSrvDocStoreCfg.hasPath("create")) {
+                                docStoreConfig.setCreate(playEbeanSrvDocStoreCfg.getBoolean("create"));
+                            }
+                            if (playEbeanSrvDocStoreCfg.hasPath("pathToResources")) {
+                                docStoreConfig.setPathToResources(playEbeanSrvDocStoreCfg.getString("pathToResources"));
+                            } else {
+                                docStoreConfig.setPathToResources("conf");
+                            }
+                            serverConfig.setDocStoreConfig(docStoreConfig);
+                        } catch (final Exception e) {
+                            throw this.configuration.reportError(
+                                "ebean.servers" + serverName + ".docstore",
+                                e.getMessage(),
+                                e
+                            );
+                        }
+                    }
 
-                serverConfigs.put(key, serverConfig);
+                    serverConfigs.put(serverName, serverConfig);
+                });
+            } else {
+                throw new RuntimeException("Bad play-ebean configuration, check your application.conf file");
             }
 
-            return new DefaultEbeanConfig(config.getDefaultDatasource(), serverConfigs);
+            return new DefaultEbeanConfig("default", serverConfigs);
         }
 
         /**
-         * Set the database server configuration.
+         * Set the datasource from DB API to the ebean server configuration.
          *
          * @param key          The server name
          * @param serverConfig The server configuration to apply
@@ -150,7 +240,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
                 );
             } catch (Exception e) {
                 throw this.configuration.reportError(
-                    "ebean." + key,
+                    "ebean.servers." + key,
                     e.getMessage(),
                     e
                 );
@@ -171,44 +261,12 @@ public class DefaultEbeanConfig implements EbeanConfig {
                     serverConfig.addClass(Class.forName(clazz, true, this.environment.classLoader()));
                 } catch (Throwable e) {
                     throw this.configuration.reportError(
-                        "ebean." + key,
+                        "ebean.servers." + key,
                         "Cannot register class [" + clazz + "] in Ebean server",
                         e
                     );
                 }
             }
-        }
-
-        /**
-         * Return all model classes from the given entry.
-         *
-         * @param entry The entry to scan
-         * @return The model classes
-         * @since 16.02.18
-         */
-        private Set<String> getModelClasses(final Map.Entry<String, List<String>> entry) {
-            final Set<String> classes = new HashSet<>();
-            entry
-                .getValue()
-                .forEach(load -> {
-                    load = load.trim();
-                    if (load.endsWith(".*")) {
-                        classes.addAll(
-                            play.libs.Classpath
-                                .getTypes(
-                                    this.environment,
-                                    load.substring(
-                                        0,
-                                        load.length() - 2
-                                    )
-                                )
-                        );
-                    } else {
-                        classes.add(load);
-                    }
-                });
-
-            return classes;
         }
 
         /**

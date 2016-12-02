@@ -8,6 +8,7 @@ lazy val root = project
   .aggregate(core)
   .settings(
     name := "play-ebean-root",
+    description := "Play Ebean module",
     organization := "com.payintech",
     homepage := Some(url(s"https://github.com/payintech/play-ebean")),
     releaseCrossBuild := false,
@@ -51,6 +52,7 @@ lazy val core = project
   .enablePlugins(Playdoc, PlayLibrary)
   .settings(
     name := "play-ebean",
+    description := "Play Ebean module",
     organization := "com.payintech",
     homepage := Some(url(s"https://github.com/payintech/play-ebean")),
     libraryDependencies ++= playEbeanDeps,
@@ -97,6 +99,7 @@ lazy val plugin = project
   .enablePlugins(PlaySbtPlugin)
   .settings(
     name := "sbt-play-ebean",
+    description := "Play Ebean module",
     organization := "com.payintech",
     homepage := Some(url(s"https://github.com/payintech/play-ebean")),
     libraryDependencies ++= sbtPlayEbeanDeps,
