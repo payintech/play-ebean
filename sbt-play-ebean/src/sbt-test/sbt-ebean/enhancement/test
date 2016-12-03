@@ -1,2 +1,0 @@
-> test
-$ exists conf/evolutions/default/1.sql

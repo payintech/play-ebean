@@ -1,3 +1,0 @@
-# Test that loading ebean models doesn't fail when there's no application.conf
--$ exists conf/application.conf
-> playEbeanModels

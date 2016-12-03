@@ -4,13 +4,9 @@ sudo: false
 jdk:
   - oraclejdk8
 
-env:
-  - SCRIPT="sbt publishLocal plugin/test plugin/scripted"
-  - SCRIPT="cd docs && sbt test"
-  - SCRIPT="cd docs && sbt validateDocs evaluateSbtFiles"
-
 script:
-  - $SCRIPT
+  - sbt --error publishLocal plugin/publishLocal
+  - cd sbt-play-ebean-test && sbt test:test
 
 cache:
   directories:
@@ -20,5 +16,6 @@ before_cache:
   # Ensure changes to the cache aren't persisted
   - rm -rf $HOME/.ivy2/cache/com.payintech.play/play-ebean*
   - rm -rf $HOME/.ivy2/cache/scala_*/sbt_*/com.payintech/sbt-play-ebean
+
   # Delete all ivy data files since ivy touches them on each build
   - find $HOME/.ivy2/cache -name "ivydata-*.properties" | xargs rm

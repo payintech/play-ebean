@@ -1,11 +1,12 @@
 package models;
 
-import java.util.*;
-import javax.persistence.*;
+import com.avaje.ebean.Model;
+import play.data.format.Formats;
+import play.data.validation.Constraints;
 
-import com.avaje.ebean.*;
-import play.data.format.*;
-import play.data.validation.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
 public class Task extends Model {
