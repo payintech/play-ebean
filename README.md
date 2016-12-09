@@ -1,7 +1,7 @@
 # play-ebean
 
 [![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
-[![Latest release](https://img.shields.io/badge/latest_release-16.11-orange.svg?style=flat)](https://github.com/0xbaadf00d/play-rabbitmq-module/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-16.12-orange.svg?style=flat)](https://github.com/0xbaadf00d/play-rabbitmq-module/releases)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202%2E0-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
 
 
