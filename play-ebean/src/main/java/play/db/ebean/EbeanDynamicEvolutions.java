@@ -7,6 +7,7 @@ import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.EbeanServerFactory;
 import com.avaje.ebean.dbmigration.model.CurrentModel;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
+import play.Configuration;
 import play.Environment;
 import play.api.db.evolutions.DynamicEvolutions;
 import play.inject.ApplicationLifecycle;
@@ -31,7 +32,12 @@ public class EbeanDynamicEvolutions extends DynamicEvolutions {
     /**
      * @since 14.11.27
      */
-    private final EbeanConfig config;
+    private final EbeanConfig ebeanConfig;
+
+    /**
+     * @since 16.12.16
+     */
+    private final Configuration configuration;
 
     /**
      * @since 14.11.27
@@ -46,14 +52,17 @@ public class EbeanDynamicEvolutions extends DynamicEvolutions {
     /**
      * Build a default instance.
      *
-     * @param config      The current Play configuration
-     * @param environment The current Play environment
-     * @param lifecycle   The current Play lifecycle instance
+     * @param ebeanConfig   The current Ebean servers configuration
+     * @param configuration The current Play configuration
+     * @param environment   The current Play environment
+     * @param lifecycle     The current Play lifecycle instance
      * @since 14.11.27
      */
     @Inject
-    public EbeanDynamicEvolutions(final EbeanConfig config, final Environment environment, final ApplicationLifecycle lifecycle) {
-        this.config = config;
+    public EbeanDynamicEvolutions(final EbeanConfig ebeanConfig, final Environment environment,
+                                  final Configuration configuration, final ApplicationLifecycle lifecycle) {
+        this.ebeanConfig = ebeanConfig;
+        this.configuration = configuration;
         this.environment = environment;
         this.start();
         lifecycle.addStopHook(() -> {
@@ -79,7 +88,6 @@ public class EbeanDynamicEvolutions extends DynamicEvolutions {
         try {
             final SpiEbeanServer spiServer = (SpiEbeanServer) server;
             final CurrentModel ddl = new CurrentModel(spiServer);
-
             final String ups = ddl.getCreateDdl();
             final String downs = ddl.getDropAllDdl();
             if (ups == null || ups.trim().isEmpty()) {
@@ -109,7 +117,7 @@ public class EbeanDynamicEvolutions extends DynamicEvolutions {
      * @since 14.11.27
      */
     public void start() {
-        this.config
+        this.ebeanConfig
             .serverConfigs()
             .forEach((key, serverConfig) ->
                 this.servers
@@ -128,10 +136,15 @@ public class EbeanDynamicEvolutions extends DynamicEvolutions {
     @Override
     public void create() {
         if (!this.environment.isProd()) {
-            this.config
+            this.ebeanConfig
                 .serverConfigs()
                 .forEach((key, serverConfig) -> {
-                    final String evolutionScript = generateEvolutionScript(this.servers.get(key));
+                    final String evolutionScript;
+                    if (this.configuration.getBoolean("play.evolutions.db." + key + ".enabled", true)) {
+                        evolutionScript = EbeanDynamicEvolutions.generateEvolutionScript(this.servers.get(key));
+                    } else {
+                        evolutionScript = null;
+                    }
                     if (evolutionScript != null) {
                         final File evolutions = this.environment.getFile("conf/evolutions/" + key + "/1.sql");
                         try {
