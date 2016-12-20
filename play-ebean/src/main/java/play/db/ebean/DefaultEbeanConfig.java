@@ -131,7 +131,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
                     if (ebeanServerConfig.hasPath("settings")) {
                         try {
                             final Config playEbeanSrvSettingsCfg = ebeanServerConfig.getConfig("settings");
-                            if (playEbeanSrvSettingsCfg.hasPath("onlyUseDocstore")) {
+                            if (playEbeanSrvSettingsCfg.hasPath("onlyUseDocstore") && ebeanServerConfig.hasPath("docstore")) {
                                 if (playEbeanSrvSettingsCfg.getBoolean("onlyUseDocStore")) {
                                     serverConfig.setDocStoreOnly(true);
                                 } else {
@@ -178,6 +178,17 @@ public class DefaultEbeanConfig implements EbeanConfig {
                     }
 
                     if (ebeanServerConfig.hasPath("docstore")) {
+                        try {
+                            Class.forName("com.avaje.ebeanservice.elastic.ElasticDocumentStore");
+                        } catch (ClassNotFoundException e) {
+                            throw this.configuration.reportError(
+                                "ebean.servers" + serverName + ".docstore",
+                                "The class \"ElasticDocumentStore\" was not found! Please add the following dependency in your project:" +
+                                    "\n\n" +
+                                    "\t\t\"org.avaje.ebean\" % \"ebean-elastic\" % \"1.5.1\"",
+                                e
+                            );
+                        }
                         try {
                             final Config playEbeanSrvDocStoreCfg = ebeanServerConfig.getConfig("docstore");
                             final DocStoreConfig docStoreConfig = new DocStoreConfig();
