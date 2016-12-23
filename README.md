@@ -1,7 +1,7 @@
 # play-ebean
 
 [![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
-[![Latest release](https://img.shields.io/badge/latest_release-16.12-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-17.01-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202%2E0-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
 
 
@@ -58,33 +58,33 @@ ebean {
 
       # Extra server settings
       settings {
-      
+
         # Set to true if this server is Document store only
         onlyUseDocStore = false
-      
+
         # Encryption key manager to use for fields annotated with @Encrypted
         encryptKeyManager = "com.zero_x_baadf00d.ebean.encryption.StandardEncryptKeyManager"
       }
 
       # Document store
       docstore {
-      
+
         # URL of the ElasticSearch server to use
         url = "http://127.0.0.1:9200"
-      
+
         # Enable document store integration
         active = true
-      
+
         # Set the relative file system path to resources when generating mapping files
         pathToResources = "conf"
-      
+
         # Generate mapping files for each index and these will by default be
         # generated into ${pathToResources} under "elastic-mapping"
         generateMapping = false
-      
+
         # Drop and re-create all indexes
         dropCreate = false
-      
+
         # Create only indexes that have not already been defined
         create = false
       }
@@ -104,12 +104,12 @@ file.
 ```sbt
 libraryDependencies ++= Seq(
   ...
-  "org.avaje.ebean" % "ebean" % "X.Y.Z"
+  "io.ebean" % "ebean" % "X.Y.Z"
 )
 
 dependencyOverrides ++= Set(
   ...
-  "org.avaje.ebean" % "ebean" % "X.Y.Z"
+  "io.ebean" % "ebean" % "X.Y.Z"
 )
 ```
 

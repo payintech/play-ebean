@@ -3,9 +3,9 @@
  */
 package play.db.ebean;
 
-import com.avaje.ebean.config.DocStoreConfig;
-import com.avaje.ebean.config.EncryptKeyManager;
-import com.avaje.ebean.config.ServerConfig;
+import io.ebean.config.DocStoreConfig;
+import io.ebean.config.EncryptKeyManager;
+import io.ebean.config.ServerConfig;
 import com.typesafe.config.Config;
 import play.Configuration;
 import play.Environment;
@@ -179,13 +179,13 @@ public class DefaultEbeanConfig implements EbeanConfig {
 
                     if (ebeanServerConfig.hasPath("docstore")) {
                         try {
-                            Class.forName("com.avaje.ebeanservice.elastic.ElasticDocumentStore");
+                            Class.forName("io.ebeanservice.elastic.ElasticDocumentStore");
                         } catch (ClassNotFoundException e) {
                             throw this.configuration.reportError(
                                 "ebean.servers" + serverName + ".docstore",
                                 "The class \"ElasticDocumentStore\" was not found! Please add the following dependency in your project:" +
                                     "\n\n" +
-                                    "\t\t\"org.avaje.ebean\" % \"ebean-elastic\" % \"1.5.1\"",
+                                    "\t\t\"io.ebean\" % \"ebean-elastic\" % \"2.1.1\"",
                                 e
                             );
                         }

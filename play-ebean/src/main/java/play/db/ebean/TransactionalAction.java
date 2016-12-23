@@ -3,7 +3,7 @@
  */
 package play.db.ebean;
 
-import com.avaje.ebean.Ebean;
+import io.ebean.Ebean;
 import play.mvc.Action;
 import play.mvc.Http.Context;
 import play.mvc.Result;

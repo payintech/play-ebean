@@ -144,8 +144,8 @@ lazy val plugin = project
   )
 val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.5.10"))
 val PlayEnhancerVersion = "1.1.0"
-val EbeanVersion = "9.3.1"
-val EbeanAgentVersion = "8.2.1"
+val EbeanVersion = "10.1.3"
+val EbeanAgentVersion = "10.1.2"
 
 playBuildRepoName in ThisBuild := "play-ebean"
 // playBuildExtraTests := {
@@ -159,13 +159,13 @@ playBuildExtraPublish := {
 def playEbeanDeps = Seq(
   "com.typesafe.play" %% "play-java-jdbc" % PlayVersion,
   "com.typesafe.play" %% "play-jdbc-evolutions" % PlayVersion,
-  "org.avaje.ebean" % "ebean" % EbeanVersion,
-  "org.avaje.ebean" % "ebean-agent" % EbeanAgentVersion,
+  "io.ebean" % "ebean" % EbeanVersion,
+  "io.ebean" % "ebean-agent" % EbeanAgentVersion,
   "com.typesafe.play" %% "play-test" % PlayVersion % Test
 )
 
 def sbtPlayEbeanDeps = Seq(
-  "org.avaje.ebean" % "ebean-agent" % EbeanAgentVersion,
+  "io.ebean" % "ebean-agent" % EbeanAgentVersion,
   "com.typesafe" % "config" % "1.3.0"
 )
 
@@ -174,8 +174,8 @@ def enhanceEbeanClasses(classpath: Classpath, analysis: Analysis, classDirectory
   // Ebean (really hacky sorry)
   val cp = classpath.map(_.data.toURI.toURL).toArray :+ classDirectory.toURI.toURL
   val cl = new java.net.URLClassLoader(cp)
-  val t = cl.loadClass("com.avaje.ebean.enhance.agent.Transformer").getConstructor(classOf[Array[URL]], classOf[String]).newInstance(cp, "debug=0").asInstanceOf[AnyRef]
-  val ft = cl.loadClass("com.avaje.ebean.enhance.ant.OfflineFileTransform").getConstructor(
+  val t = cl.loadClass("io.ebean.enhance.agent.Transformer").getConstructor(classOf[Array[URL]], classOf[String]).newInstance(cp, "debug=0").asInstanceOf[AnyRef]
+  val ft = cl.loadClass("io.ebean.enhance.ant.OfflineFileTransform").getConstructor(
     t.getClass, classOf[ClassLoader], classOf[String]
   ).newInstance(t, ClassLoader.getSystemClassLoader, classDirectory.getAbsolutePath).asInstanceOf[AnyRef]
   ft.getClass.getDeclaredMethod("process", classOf[String]).invoke(ft, pkg)

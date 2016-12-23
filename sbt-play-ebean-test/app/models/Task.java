@@ -1,6 +1,7 @@
 package models;
 
-import com.avaje.ebean.Model;
+import io.ebean.Finder;
+import io.ebean.Model;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
 
@@ -11,7 +12,7 @@ import java.util.Date;
 @Entity
 public class Task extends Model {
 
-    public static Model.Finder<Long, Task> find = new Model.Finder<>(Task.class);
+    public static Finder<Long, Task> find = new Finder<>(Task.class);
 
     @Id
     public Long id;
