@@ -1,7 +1,7 @@
 # play-ebean
 
-[![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
 [![Latest release](https://img.shields.io/badge/latest_release-17.01-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
+[![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202%2E0-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
 
 
@@ -19,23 +19,16 @@ This project was forked from the original repository [playframework/play-ebean](
 ## How to use
 
 
-### Add the module to your Play appliction
+### Add the module to your Play application
 
-![Settings](https://www.iconfinder.com/icons/465051/download/png/16) **project/plugin.sbt**
+play-ebean can be easily added to your Play application by adding the following line in the file `project/plugin.sbt`. You have to replace _YY.MM_ with the release number you want to use from available [releases](https://github.com/payintech/play-ebean/releases).
+
 ```
-resolvers += Resolver.sonatypeRepo("releases")
-
 addSbtPlugin("com.payintech" % "sbt-play-ebean" % "YY.MM")
 ```
 
-You have to replace _YY.MM_ with available release you want to use (see Releases tab).
-
-
-![Settings](https://www.iconfinder.com/icons/465051/download/png/16) **build.sbt**
-
-```
-resolvers += Resolver.sonatypeRepo("releases")
-```
+**Note:** If you are already using `sbt-play-ebean` provided by `com.typesafe.sbt`, you
+have to comment or remove the line to avoid any conflicts.
 
 
 ### Configure the module
