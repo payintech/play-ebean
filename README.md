@@ -57,6 +57,13 @@ ebean {
 
         # Encryption key manager to use for fields annotated with @Encrypted
         encryptKeyManager = "com.zero_x_baadf00d.ebean.encryption.StandardEncryptKeyManager"
+
+        # Set the user provider. This is used to populate @WhoCreated, @WhoModified an
+        # support other audit features
+        currentUserProvider = "com.zero_x_baadf00d.ebean.provider.CustomUserProvider"
+
+        # Set the tenant provider
+        currentTenantProvider = "com.zero_x_baadf00d.ebean.provider.CustomTenantProvider"
       }
 
       # Document store

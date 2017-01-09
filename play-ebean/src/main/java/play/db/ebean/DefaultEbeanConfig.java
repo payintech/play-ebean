@@ -3,10 +3,8 @@
  */
 package play.db.ebean;
 
-import io.ebean.config.DocStoreConfig;
-import io.ebean.config.EncryptKeyManager;
-import io.ebean.config.ServerConfig;
 import com.typesafe.config.Config;
+import io.ebean.config.*;
 import play.Configuration;
 import play.Environment;
 import play.db.DBApi;
@@ -146,6 +144,18 @@ public class DefaultEbeanConfig implements EbeanConfig {
                                     .getClassLoadConfig()
                                     .newInstance(playEbeanSrvSettingsCfg.getString("encryptKeyManager"));
                                 serverConfig.setEncryptKeyManager(encryptKeyManager);
+                            }
+                            if (playEbeanSrvSettingsCfg.hasPath("currentUserProvider")) {
+                                final CurrentUserProvider currentUserProvider = (CurrentUserProvider) serverConfig
+                                    .getClassLoadConfig()
+                                    .newInstance(playEbeanSrvSettingsCfg.getString("currentUserProvider"));
+                                serverConfig.setCurrentUserProvider(currentUserProvider);
+                            }
+                            if (playEbeanSrvSettingsCfg.hasPath("currentTenantProvider")) {
+                                final CurrentTenantProvider currentTenantProvider = (CurrentTenantProvider) serverConfig
+                                    .getClassLoadConfig()
+                                    .newInstance(playEbeanSrvSettingsCfg.getString("currentTenantProvider"));
+                                serverConfig.setCurrentTenantProvider(currentTenantProvider);
                             }
                         } catch (final Exception e) {
                             throw this.configuration.reportError(

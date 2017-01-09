@@ -31,7 +31,9 @@ public class TaskTest extends WithApplication {
         task.done = false;
         task.save();
 
-        Task saved = Task.find.byId(10l);
+        Task saved = Task.find.byId(10L);
         assertEquals("Hello", saved.name);
+        assertEquals("John", saved.whoCreated);
+        assertEquals("John", saved.whoModified);
     }
 }
