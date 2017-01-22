@@ -129,7 +129,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
                     if (ebeanServerConfig.hasPath("settings")) {
                         try {
                             final Config playEbeanSrvSettingsCfg = ebeanServerConfig.getConfig("settings");
-                            if (playEbeanSrvSettingsCfg.hasPath("onlyUseDocstore") && ebeanServerConfig.hasPath("docstore")) {
+                            if (playEbeanSrvSettingsCfg.hasPath("onlyUseDocStore") && ebeanServerConfig.hasPath("docstore")) {
                                 if (playEbeanSrvSettingsCfg.getBoolean("onlyUseDocStore")) {
                                     serverConfig.setDocStoreOnly(true);
                                 } else {
