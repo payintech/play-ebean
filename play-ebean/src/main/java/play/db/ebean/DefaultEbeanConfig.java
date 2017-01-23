@@ -182,6 +182,11 @@ public class DefaultEbeanConfig implements EbeanConfig {
                                     .newInstance(playEbeanSrvSettingsCfg.getString("currentTenantProvider"));
                                 serverConfig.setCurrentTenantProvider(currentTenantProvider);
                             }
+                            if (playEbeanSrvSettingsCfg.hasPath("disableL2Cache")) {
+                                serverConfig.setDisableL2Cache(
+                                    playEbeanSrvSettingsCfg.getBoolean("disableL2Cache")
+                                );
+                            }
                         } catch (final Exception e) {
                             throw this.configuration.reportError(
                                 "ebean.servers" + serverName + ".settings",
