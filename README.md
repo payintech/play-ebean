@@ -36,9 +36,9 @@ have to comment or remove the line to avoid any conflicts.
 You can configure the module by adding the following keys on your `application.conf` file :
 
 ```cfg
-# Ebean
-# ~~~~~
+## Ebean
 # https://github.com/payintech/play-ebean
+# ~~~~~
 ebean {
   servers {
 
@@ -89,6 +89,25 @@ ebean {
         create = false
       }
     }
+  }
+
+  # Ebean clustering
+  # Read more at http://ebean-orm.github.io/docs/features/clustering
+  # Note that this is specifically for Ebean's ebean-cluster module (L2 cache
+  # implementation - near cache based). And this not required if the L2 cache
+  # implementation is instead ebean-hazelcast or ebean-ignite.
+  clustering {
+
+    # Is clustering enabled?
+    isActive = false
+
+    # Define the "IP" and "PORT" (eg: 127.0.0.1:9942) of the current node
+    currentNode = "127.0.0.1:9942"
+
+    # Define all members of the cluster. This list must include the current node too
+    members = [
+      "127.0.0.1:9942"
+    ]
   }
 }
 ```

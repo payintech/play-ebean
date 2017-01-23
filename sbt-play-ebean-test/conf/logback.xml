@@ -27,6 +27,7 @@
   <logger name="play" level="INFO" />
   <logger name="application" level="DEBUG" />
   <logger name="io.ebean.SQL" level="DEBUG" />
+  <logger name="org.avaje.ebean.Cluster" level="DEBUG" />
 
   <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
   <logger name="io.ebean.config.PropertyMapLoader" level="OFF" />

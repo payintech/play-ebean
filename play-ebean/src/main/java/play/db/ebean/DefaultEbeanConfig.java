@@ -4,6 +4,7 @@
 package play.db.ebean;
 
 import com.typesafe.config.Config;
+import io.ebean.EbeanServerFactory;
 import io.ebean.config.*;
 import play.Configuration;
 import play.Environment;
@@ -12,10 +13,8 @@ import play.db.DBApi;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Ebean server configuration.
@@ -113,6 +112,32 @@ public class DefaultEbeanConfig implements EbeanConfig {
         public EbeanConfig parse() {
             final Map<String, ServerConfig> serverConfigs = new HashMap<>();
             final Config underliedConfiguration = this.configuration.underlying();
+
+            if (underliedConfiguration.hasPathOrNull("ebean.clustering")) {
+                final Config playEbeanClusteringCfg = underliedConfiguration.getConfig("ebean.clustering");
+                if (playEbeanClusteringCfg.hasPath("isActive") && playEbeanClusteringCfg.getBoolean("isActive")) {
+                    final ContainerConfig containerConfig = new ContainerConfig();
+                    final Properties properties = new Properties();
+                    if (playEbeanClusteringCfg.hasPath("currentNode")) {
+                        properties.setProperty(
+                            "ebean.cluster.localHostPort",
+                            playEbeanClusteringCfg.getString("currentNode")
+                        );
+                    }
+                    if (playEbeanClusteringCfg.hasPath("members")) {
+                        properties.setProperty(
+                            "ebean.cluster.members",
+                            playEbeanClusteringCfg.getStringList("members")
+                                .stream()
+                                .map(String::trim)
+                                .collect(Collectors.joining(","))
+                        );
+                    }
+                    containerConfig.setClusterActive(true);
+                    containerConfig.setProperties(properties);
+                    EbeanServerFactory.initialiseContainer(containerConfig);
+                }
+            }
 
             if (underliedConfiguration.hasPathOrNull("ebean.servers")) {
                 final Config playEbeanSrvCfg = underliedConfiguration.getConfig("ebean.servers");
