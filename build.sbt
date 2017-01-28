@@ -144,7 +144,7 @@ lazy val plugin = project
   )
 val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.5.10"))
 val PlayEnhancerVersion = "1.1.0"
-val EbeanVersion = "10.1.3"
+val EbeanVersion = "10.1.5"
 val EbeanAgentVersion = "10.1.2"
 
 playBuildRepoName in ThisBuild := "play-ebean"
