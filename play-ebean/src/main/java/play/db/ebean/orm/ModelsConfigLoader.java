@@ -1,4 +1,4 @@
-package play.db.ebean;
+package play.db.ebean.orm;
 
 import com.typesafe.config.Config;
 import play.Configuration;

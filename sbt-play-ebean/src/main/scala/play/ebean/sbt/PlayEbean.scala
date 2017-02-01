@@ -128,7 +128,7 @@ object PlayEbean extends AutoPlugin {
     }
 
     withClassLoader { classLoader =>
-      val configLoader = classLoader.loadClass("play.db.ebean.ModelsConfigLoader").
+      val configLoader = classLoader.loadClass("play.db.ebean.orm.ModelsConfigLoader").
         asSubclass(classOf[java.util.function.Function[ClassLoader, JMap[String, JList[String]]]])
       val config = configLoader.newInstance().apply(classLoader)
 

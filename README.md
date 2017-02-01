@@ -112,6 +112,26 @@ ebean {
       "127.0.0.1:9942"
     ]
   }
+
+  # Ebean DB Migration
+  # Read more at https://github.com/ebean-orm/ebean-dbmigration
+  dbmigration {
+
+    # Is Ebean DB Migration enabled?
+    enabled = false
+
+    # Defines where are located migration SQL scripts. Ebean DB Migration
+    # will search SQL scripts in "conf/${migrationPath}/${serverName}-${appMode}"
+    # or "conf/${migrationPath}/${serverName}"
+    #
+    # By example, in your run your application in development mode:
+    #     conf/dbmigration/default-dev/
+    #  OR conf/dbmigration/default/
+    migrationPath = "dbmigration"
+
+    # Is the migration must be auto applied?
+    autoApply = false
+  }
 }
 ```
 

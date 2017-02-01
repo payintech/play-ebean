@@ -8,4 +8,4 @@
  * @see <a href="http://ebean-orm.github.io">http://ebean-orm.github.io</a>
  * @since 14.11.27
  */
-package play.db.ebean;
+package play.db.ebean.orm;

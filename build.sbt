@@ -146,6 +146,7 @@ val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.5.10"))
 val PlayEnhancerVersion = "1.1.0"
 val EbeanVersion = "10.1.5"
 val EbeanAgentVersion = "10.1.2"
+val EbeanDBMigrationVersion = "10.1.3"
 
 playBuildRepoName in ThisBuild := "play-ebean"
 // playBuildExtraTests := {
@@ -161,6 +162,7 @@ def playEbeanDeps = Seq(
   "com.typesafe.play" %% "play-jdbc-evolutions" % PlayVersion,
   "io.ebean" % "ebean" % EbeanVersion,
   "io.ebean" % "ebean-agent" % EbeanAgentVersion,
+  "io.ebean" % "ebean-dbmigration" % EbeanDBMigrationVersion,
   "com.typesafe.play" %% "play-test" % PlayVersion % Test
 )
 
