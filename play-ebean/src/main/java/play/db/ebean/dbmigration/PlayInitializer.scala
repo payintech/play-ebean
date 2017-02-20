@@ -123,7 +123,7 @@ class PlayInitializer @Inject()
       }
     } catch {
       case ex: SQLException =>
-        if (!ex.getLocalizedMessage.contains("not exist")) {
+        if (!ex.getMessage.contains("exist")) {
           throw ex
         }
     } finally {

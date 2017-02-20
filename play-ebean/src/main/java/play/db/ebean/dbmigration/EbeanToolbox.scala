@@ -58,7 +58,7 @@ object EbeanToolbox {
           .execute()
       } catch {
         case ex@(_: PersistenceException | _: SQLException) =>
-          if (!ex.getLocalizedMessage.contains("not exist")) {
+          if (!ex.getMessage.contains("exist")) {
             throw ex
           }
       }
