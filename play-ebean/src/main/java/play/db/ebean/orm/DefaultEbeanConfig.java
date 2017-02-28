@@ -254,6 +254,11 @@ public class DefaultEbeanConfig implements EbeanConfig {
                             } else {
                                 docStoreConfig.setPathToResources("conf");
                             }
+                            if (playEbeanSrvDocStoreCfg.hasPath("allowAllCertificates")) {
+                                docStoreConfig.setAllowAllCertificates(playEbeanSrvDocStoreCfg.getBoolean("allowAllCertificates"));
+                            } else {
+                                docStoreConfig.setAllowAllCertificates(false);
+                            }
                             serverConfig.setDocStoreConfig(docStoreConfig);
                         } catch (final Exception e) {
                             throw this.configuration.reportError(
