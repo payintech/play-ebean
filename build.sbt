@@ -15,6 +15,12 @@ lazy val root = project
     publishMavenStyle := false
   )
   .settings(
+    credentials += Credentials(
+      "Sonatype Nexus Repository Manager",
+      "oss.sonatype.org",
+      System.getenv("OSS_ST_USERNAME"),
+      System.getenv("OSS_ST_PASSWORD")
+    ),
     useGpg := true,
     usePgpKeyHex("B4B939B5"),
     publishTo := {
@@ -64,6 +70,12 @@ lazy val core = project
     )
   )
   .settings(
+    credentials += Credentials(
+      "Sonatype Nexus Repository Manager",
+      "oss.sonatype.org",
+      System.getenv("OSS_ST_USERNAME"),
+      System.getenv("OSS_ST_PASSWORD")
+    ),
     publishTo := {
       val nexus = "https://oss.sonatype.org/"
       if (isSnapshot.value)
