@@ -1,6 +1,13 @@
 import com.typesafe.sbt.SbtPgp.autoImportImpl.usePgpKeyHex
 import sbt.Keys.{publishMavenStyle, publishTo}
 import sbt.inc.Analysis
+import interplay.ScalaVersions._
+
+val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.6.0"))
+val PlayEnhancerVersion = "1.2.1"
+val EbeanVersion = "10.3.1"
+val EbeanAgentVersion = "10.2.1"
+val EbeanDBMigrationVersion = "10.1.8"
 
 lazy val root = project
   .in(file("."))
@@ -11,7 +18,7 @@ lazy val root = project
     description := "Play Ebean module",
     organization := "com.payintech",
     homepage := Some(url(s"https://github.com/payintech/play-ebean")),
-    releaseCrossBuild := false,
+    releaseCrossBuild := true,
     publishMavenStyle := false
   )
   .settings(
@@ -61,6 +68,7 @@ lazy val core = project
     description := "Play Ebean module",
     organization := "com.payintech",
     homepage := Some(url(s"https://github.com/payintech/play-ebean")),
+    crossScalaVersions := Seq(scala211),
     libraryDependencies ++= playEbeanDeps,
     compile in Compile := enhanceEbeanClasses(
       (dependencyClasspath in Compile).value,
@@ -117,7 +125,7 @@ lazy val plugin = project
     libraryDependencies ++= sbtPlayEbeanDeps,
     addSbtPlugin("com.typesafe.sbt" % "sbt-play-enhancer" % PlayEnhancerVersion),
     addSbtPlugin("com.typesafe.play" % "sbt-plugin" % PlayVersion),
-    resourceGenerators in Compile <+= generateVersionFile,
+    resourceGenerators in Compile += generateVersionFile.taskValue,
     scriptedLaunchOpts ++= Seq("-Dplay-ebean.version=" + version.value),
     scriptedDependencies := {
       val () = publishLocal.value
@@ -154,11 +162,6 @@ lazy val plugin = project
         </developer>
       </developers>
   )
-val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.5.15"))
-val PlayEnhancerVersion = "1.2.1"
-val EbeanVersion = "10.3.1"
-val EbeanAgentVersion = "10.2.1"
-val EbeanDBMigrationVersion = "10.1.8"
 
 playBuildRepoName in ThisBuild := "play-ebean"
 
@@ -168,6 +171,7 @@ playBuildExtraPublish := {
 
 // Dependencies
 def playEbeanDeps = Seq(
+  "com.typesafe.play" %% "play-guice" % PlayVersion,
   "com.typesafe.play" %% "play-java-jdbc" % PlayVersion,
   "com.typesafe.play" %% "play-jdbc-evolutions" % PlayVersion,
   "io.ebean" % "ebean" % EbeanVersion,
@@ -178,7 +182,7 @@ def playEbeanDeps = Seq(
 
 def sbtPlayEbeanDeps = Seq(
   "io.ebean" % "ebean-agent" % EbeanAgentVersion,
-  "com.typesafe" % "config" % "1.3.0"
+  "com.typesafe" % "config" % "1.3.1"
 )
 
 // Ebean enhancement

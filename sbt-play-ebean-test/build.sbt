@@ -9,4 +9,4 @@ libraryDependencies ++= Seq(
   "io.ebean" % "ebean-cluster" % "2.1.1"
 )
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.1"
