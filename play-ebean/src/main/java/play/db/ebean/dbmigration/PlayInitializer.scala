@@ -123,9 +123,6 @@ class PlayInitializer @Inject()
       }
     } catch {
       case ex: SQLException =>
-        if (!ex.getMessage.contains("exist")) {
-          throw ex
-        }
     } finally {
       JdbcClose.close(ebeanConnection)
     }
