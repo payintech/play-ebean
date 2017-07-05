@@ -146,7 +146,6 @@ public class DefaultEbeanConfig implements EbeanConfig {
                     final ServerConfig serverConfig = new ServerConfig();
                     serverConfig.setName(serverName);
                     serverConfig.loadFromProperties();
-                    serverConfig.setH2ProductionMode(true);  // Since Ebean 9.1.1: Don't override Evolution
                     if (serverName.compareTo("default") == 0) {
                         serverConfig.setDefaultServer(true);
                     }
@@ -163,6 +162,11 @@ public class DefaultEbeanConfig implements EbeanConfig {
                                 }
                             } else {
                                 this.setServerConfigDataSource(serverName, serverConfig);
+                            }
+                            if (playEbeanSrvSettingsCfg.hasPath("allQuotedIdentifiers")) {
+                                serverConfig.setAllQuotedIdentifiers(
+                                    playEbeanSrvSettingsCfg.getBoolean("allQuotedIdentifiers")
+                                );
                             }
                             if (playEbeanSrvSettingsCfg.hasPath("encryptKeyManager")) {
                                 final EncryptKeyManager encryptKeyManager = (EncryptKeyManager) serverConfig
