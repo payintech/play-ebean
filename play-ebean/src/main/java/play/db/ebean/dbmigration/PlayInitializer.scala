@@ -1,17 +1,9 @@
 package play.db.ebean.dbmigration
 
-import java.sql.SQLException
 import javax.inject.{Inject, Singleton}
 
-import io.ebean.Ebean
-import io.ebean.dbmigration.MigrationConfig
-import io.ebean.dbmigration.runner._
-import io.ebean.dbmigration.util.JdbcClose
 import play.api.{Configuration, Environment, Logger, Mode}
 import play.core.WebCommands
-
-import scala.collection.JavaConversions._
-import scala.collection.mutable.ListBuffer
 
 /**
   * PlayInitializer.
@@ -26,21 +18,21 @@ class PlayInitializer @Inject()
   /**
     * @since 17.01.30
     */
-  private val isEnabled: Boolean = configuration.getBoolean(
+  private val isEnabled: Boolean = configuration.getOptional[Boolean](
     "ebean.dbmigration.enabled"
   ).getOrElse(false)
 
   /**
     * @since 17.01.29
     */
-  private val migrationPath: String = configuration.getString(
+  private val migrationPath: String = configuration.getOptional[String](
     "ebean.dbmigration.migrationPath"
   ).getOrElse("dbmigration")
 
   /**
     * @since 17.01.30
     */
-  private val autoApply: Boolean = configuration.getBoolean(
+  private val autoApply: Boolean = configuration.getOptional[Boolean](
     "ebean.dbmigration.autoApply"
   ).getOrElse(false)
 
@@ -56,9 +48,9 @@ class PlayInitializer @Inject()
     */
   def onStart(): Unit = {
     if (this.isEnabled) {
-      val maybeSubKeys = configuration.getConfig("ebean.servers")
+      val maybeSubKeys = configuration.getOptional[Configuration]("ebean.servers")
       if (maybeSubKeys.isDefined) maybeSubKeys.get.subKeys.foreach(key => {
-        val changedMigrationResource = this.checkServerState(key)
+        val changedMigrationResource = EbeanToolbox.checkEbeanServerState(this.migrationPath, this.environment, key)
         if (changedMigrationResource.nonEmpty) {
           var data = ""
           for (res <- changedMigrationResource) {
@@ -92,62 +84,6 @@ class PlayInitializer @Inject()
         }
       })
     }
-  }
-
-  /**
-    * Get the list of changed resources for the given Ebean server.
-    *
-    * @param serverName The Ebean server name
-    * @return A list of changed resources
-    * @since 17.01.29
-    */
-  private[this] def checkServerState(serverName: String): List[LocalMigrationResource] = {
-    var changedMigrationResource = ListBuffer[LocalMigrationResource]()
-    var dataFromMigrationTable = Map[String, Int]()
-
-    val ebeanConnection = Ebean.getServer(serverName)
-      .getPluginApi
-      .getDataSource
-      .getConnection
-    try {
-      val preparedStatement = ebeanConnection.prepareStatement(
-        "SELECT mversion, mchecksum FROM db_migration ORDER BY id"
-      )
-      val resultSet = preparedStatement.executeQuery()
-      try {
-        while (resultSet.next()) {
-          dataFromMigrationTable += resultSet.getString(1) -> resultSet.getInt(2)
-        }
-      } finally {
-        JdbcClose.close(resultSet)
-      }
-    } catch {
-      case ex: SQLException =>
-    } finally {
-      JdbcClose.close(ebeanConnection)
-    }
-
-    val migrationConfig: MigrationConfig = new MigrationConfig
-    if (environment.getFile(s"conf/$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName-${environment.mode.toString.toLowerCase}").isDirectory) {
-      migrationConfig.setMigrationPath(s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName-${environment.mode.toString.toLowerCase}")
-    } else if (environment.getFile(s"conf/$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName").isDirectory) {
-      migrationConfig.setMigrationPath(s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName")
-    } else {
-      return changedMigrationResource.toList
-    }
-    val migrationResources = new LocalMigrationResources(migrationConfig)
-    if (migrationResources.readResources()) {
-      migrationResources.getVersions.toStream.foreach(res => {
-        val maybeChecksum = dataFromMigrationTable.get(res.key())
-        if (maybeChecksum.isEmpty
-          || (maybeChecksum.get != EbeanToolbox.calculateCRC32(res.getContent)
-          && (res.isRepeatable || this.allowAlreadyProcessedFiles))) {
-          changedMigrationResource += res
-        }
-      })
-    }
-
-    changedMigrationResource.toList
   }
 
   /**

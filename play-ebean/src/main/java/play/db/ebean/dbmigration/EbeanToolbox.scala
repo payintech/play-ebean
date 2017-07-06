@@ -1,13 +1,14 @@
 package play.db.ebean.dbmigration
 
-import java.io.{BufferedReader, StringReader}
 import java.sql.SQLException
-import java.util.zip.CRC32
 import javax.persistence.PersistenceException
 
 import io.ebean.Ebean
+import io.ebean.dbmigration.runner.LocalMigrationResource
 import io.ebean.dbmigration.{MigrationConfig, MigrationRunner}
 import play.api.Environment
+
+import scala.collection.JavaConverters._
 
 /**
   * EbeanToolbox
@@ -16,26 +17,6 @@ import play.api.Environment
   * @author Thibault Meyer
   */
 object EbeanToolbox {
-
-  /**
-    * Compute the CRC32.
-    *
-    * @param str The data to crunch
-    * @return The CRC32 value
-    * @since 17.01.30
-    */
-  def calculateCRC32(str: String): Int = {
-    val crc32 = new CRC32()
-    val bufferedReader = new BufferedReader(new StringReader(str))
-    var line = ""
-    do {
-      line = bufferedReader.readLine()
-      if (line != null) {
-        crc32.update(line.getBytes("UTF-8"))
-      }
-    } while (line != null)
-    crc32.getValue.asInstanceOf[Int]
-  }
 
   /**
     * Migrate the given Ebean server.
@@ -51,7 +32,7 @@ object EbeanToolbox {
   def migrateEbeanServer(migrationPath: String, environment: Environment, serverName: String, forceKey: String, allowAlreadyProcessedFiles: Boolean): Unit = {
     val ebeanServer = Ebean.getServer(serverName)
 
-    if (forceKey != null && forceKey.trim.nonEmpty && allowAlreadyProcessedFiles) {
+    if (forceKey != null && forceKey.trim.nonEmpty && allowAlreadyProcessedFiles) { //TODO: Remove?
       try {
         ebeanServer
           .createSqlUpdate(s"DELETE FROM db_migration WHERE id >= (SELECT MAX(id) FROM db_migration WHERE mversion LIKE '${forceKey.trim.replace("%", "")}')")
@@ -64,24 +45,85 @@ object EbeanToolbox {
       }
     }
 
-    val migrationConfig: MigrationConfig = new MigrationConfig
-    if (environment.getFile(s"conf/$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName-${environment.mode.toString.toLowerCase}").isDirectory) {
-      migrationConfig.setMigrationPath(s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName-${environment.mode.toString.toLowerCase}")
+    val folder = guessMigrationFolderToUse(
+      migrationPath,
+      environment,
+      serverName,
+      ebeanServer.getPluginApi.getPluginApi.getDatabasePlatform.getPlatform.name.toLowerCase
+    )
+    if (folder.isDefined) {
+      val migrationConfig: MigrationConfig = new MigrationConfig
+      migrationConfig.setMigrationPath(folder.get)
+      val migrationRunner = new MigrationRunner(migrationConfig)
+      try {
+        migrationRunner.run(
+          ebeanServer
+            .getPluginApi
+            .getDataSource
+        )
+      } catch {
+        case e: SQLException =>
+          throw MigrationRunnerError(serverName, e)
+        case e: RuntimeException =>
+          throw MigrationRunnerError(serverName, e.getCause.asInstanceOf[SQLException])
+      }
+    }
+  }
+
+  /**
+    * Migrate the given Ebean server.
+    *
+    * @since 17.06.07
+    * @param migrationPath Migration files root path
+    * @param environment   The current environment
+    * @param serverName    The Ebean server name
+    * @throws MigrationRunnerError If something goes wrong during migration
+    */
+  def checkEbeanServerState(migrationPath: String, environment: Environment, serverName: String): Iterable[LocalMigrationResource] = {
+    val ebeanServer = Ebean.getServer(serverName)
+    val folder = guessMigrationFolderToUse(
+      migrationPath,
+      environment,
+      serverName,
+      ebeanServer.getPluginApi.getPluginApi.getDatabasePlatform.getPlatform.name.toLowerCase
+    )
+    if (folder.isDefined) {
+      val migrationConfig: MigrationConfig = new MigrationConfig
+      migrationConfig.setMigrationPath(folder.get)
+      val migrationRunner = new MigrationRunner(migrationConfig)
+      try {
+        migrationRunner.checkState(
+          ebeanServer
+            .getPluginApi
+            .getDataSource
+        ).asScala
+      } catch {
+        case e: SQLException =>
+          throw MigrationRunnerError(serverName, e)
+        case e: RuntimeException =>
+          throw MigrationRunnerError(serverName, e.getCause.asInstanceOf[SQLException])
+      }
     } else {
-      migrationConfig.setMigrationPath(s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName")
+      Iterable[LocalMigrationResource]()
     }
-    val migrationRunner = new MigrationRunner(migrationConfig)
-    try {
-      migrationRunner.run(
-        ebeanServer
-          .getPluginApi
-          .getDataSource
-      )
-    } catch {
-      case e: SQLException =>
-        throw MigrationRunnerError(serverName, e)
-      case e: RuntimeException =>
-        throw MigrationRunnerError(serverName, e.getCause.asInstanceOf[SQLException])
-    }
+  }
+
+  /**
+    * Try to guess the migration folder to use.
+    *
+    * @since 17.06.07
+    * @return The migration folder to use
+    */
+  private[this] def guessMigrationFolderToUse(migrationPath: String, environment: Environment,
+                                              serverName: String, plateformName: String): Option[String] = {
+    val folderToTry = List[String](
+      s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$plateformName/$serverName-${environment.mode.toString.toLowerCase}",
+      s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$plateformName/$serverName",
+      s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName-${environment.mode.toString.toLowerCase}",
+      s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName"
+    )
+    folderToTry
+      .filter(folder => environment.getFile("conf/" + folder).isDirectory)
+      .lift(0)
   }
 }

@@ -134,7 +134,9 @@ ebean {
     # or "conf/${migrationPath}/${serverName}"
     #
     # By example, in your run your application in development mode:
-    #     conf/dbmigration/default-dev/
+    #     conf/dbmigration/<platform>/default-dev/
+    #  OR conf/dbmigration/<platform>/default/
+    #  OR conf/dbmigration/default-dev/
     #  OR conf/dbmigration/default/
     migrationPath = "dbmigration"
 
