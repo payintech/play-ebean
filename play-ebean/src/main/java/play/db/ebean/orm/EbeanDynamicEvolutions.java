@@ -3,7 +3,7 @@
  */
 package play.db.ebean.orm;
 
-import play.Configuration;
+import com.typesafe.config.Config;
 import io.ebean.EbeanServer;
 import io.ebean.EbeanServerFactory;
 import io.ebean.dbmigration.model.CurrentModel;
@@ -37,7 +37,7 @@ public class EbeanDynamicEvolutions extends DynamicEvolutions {
     /**
      * @since 16.12.16
      */
-    private final Configuration configuration;
+    private final Config configuration;
 
     /**
      * @since 14.11.27
@@ -60,7 +60,7 @@ public class EbeanDynamicEvolutions extends DynamicEvolutions {
      */
     @Inject
     public EbeanDynamicEvolutions(final EbeanConfig ebeanConfig, final Environment environment,
-                                  final Configuration configuration, final ApplicationLifecycle lifecycle) {
+                                  final Config configuration, final ApplicationLifecycle lifecycle) {
         this.ebeanConfig = ebeanConfig;
         this.configuration = configuration;
         this.environment = environment;
@@ -140,7 +140,8 @@ public class EbeanDynamicEvolutions extends DynamicEvolutions {
                 .serverConfigs()
                 .forEach((key, serverConfig) -> {
                     final String evolutionScript;
-                    if (this.configuration.getBoolean("play.evolutions.db." + key + ".enabled", true)) {
+                    if (!this.configuration.hasPath("play.evolutions.db." + key + ".enabled")
+                        ||this.configuration.getBoolean("play.evolutions.db." + key + ".enabled")) {
                         evolutionScript = EbeanDynamicEvolutions.generateEvolutionScript(this.servers.get(key));
                     } else {
                         evolutionScript = null;

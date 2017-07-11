@@ -1,11 +1,8 @@
 package play.db.ebean.orm;
 
 import com.typesafe.config.Config;
-import play.Configuration;
-import play.Environment;
-import play.Mode;
+import com.typesafe.config.ConfigFactory;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,14 +21,11 @@ public class ModelsConfigLoader implements Function<ClassLoader, Map<String, Lis
 
     @Override
     public Map<String, List<String>> apply(final ClassLoader classLoader) {
-        // Using TEST mode is the only way to load configuration without failing if application.conf doesn't exist
-        final Environment env = new Environment(new File("."), classLoader, Mode.TEST);
         final Map<String, List<String>> datasourceModels = new HashMap<>();
-        final Configuration config = Configuration.load(env);
-        final Config underliedConfiguration = config.underlying();
+        final Config config = ConfigFactory.load(classLoader);
 
-        if (underliedConfiguration.hasPathOrNull("ebean.servers")) {
-            final Config ebeanServersConfig = underliedConfiguration.getConfig("ebean.servers");
+        if (config.hasPathOrNull("ebean.servers")) {
+            final Config ebeanServersConfig = config.getConfig("ebean.servers");
             ebeanServersConfig.root().keySet().forEach(serverName -> {
                 final Config ebeanServerConfig = ebeanServersConfig.getConfig(serverName);
                 if (ebeanServerConfig.hasPath("enhancement")) {

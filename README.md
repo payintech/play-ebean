@@ -1,6 +1,6 @@
 # play-ebean
 
-[![Latest release](https://img.shields.io/badge/latest_release-17.06-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-17.07-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
 [![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202%2E0-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
 
@@ -14,6 +14,31 @@ This module provides Ebean support for Play Framework 2.5 and superior.
 This project was forked from the original repository [playframework/play-ebean](https://github.com/playframework/play-ebean).
 
 
+
+## Version
+
+The plugin is built against the latest versions of Play Framework. If you are
+using an older version of Play Framework, think to use the right plugin version.
+
+### Play Framework 2.6.x
+
+| Plugin | Play Framework | Ebean ORM | Ebean Agent |
+|--------|----------------|-----------|-------------|
+| 17.07  | 2.6.1          | 10.4.1    | 10.3.1      |
+| 17.06  | 2.6.0          | 10.3.1    | 10.2.1      |
+
+
+### Play Framework 2.5.x
+
+| Plugin | Play Framework | Ebean ORM | Ebean Agent |
+|--------|----------------|-----------|-------------|
+| 17.05  | 2.5.15         | 10.3.1    | 10.2.1      |
+| 17.04  | 2.5.13         | 10.2.1    | 10.1.7      |
+| 17.03  | 2.5.12         | 10.1.7    | 10.1.6      |
+| 17.02  | 2.5.12         | 10.1.6    | 10.1.2      |
+| 17.01  | 2.5.10         | 10.1.3    | 10.1.2      |
+| 16.12  | 2.5.10         | 9.3.1     | 8.2.1       |
+| 16.11  | 2.5.10         | 9.1.2     | 8.1.1       |
 
 
 ## How to use

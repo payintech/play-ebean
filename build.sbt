@@ -3,7 +3,7 @@ import sbt.Keys.{publishMavenStyle, publishTo}
 import sbt.inc.Analysis
 import interplay.ScalaVersions._
 
-val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.6.0"))
+val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.6.1"))
 val PlayEnhancerVersion = "1.2.1"
 val EbeanVersion = "10.4.1"
 val EbeanAgentVersion = "10.3.1"

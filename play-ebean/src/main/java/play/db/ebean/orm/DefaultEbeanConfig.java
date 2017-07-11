@@ -4,15 +4,26 @@
 package play.db.ebean.orm;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigOrigin;
 import io.ebean.EbeanServerFactory;
 import io.ebean.config.*;
-import play.Configuration;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.scanners.TypeElementsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 import play.Environment;
+import play.api.PlayException;
 import play.db.DBApi;
+import play.libs.ReflectionsCache$;
+import scala.Option;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -71,7 +82,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
         /**
          * @since 14.11.27
          */
-        private final Configuration configuration;
+        private final Config configuration;
 
         /**
          * @since 14.11.27
@@ -92,7 +103,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
          * @since 14.11.27
          */
         @Inject
-        public EbeanConfigParser(final Configuration configuration, final Environment environment, final DBApi dbApi) {
+        public EbeanConfigParser(final Config configuration, final Environment environment, final DBApi dbApi) {
             this.configuration = configuration;
             this.environment = environment;
             this.dbApi = dbApi;
@@ -104,17 +115,62 @@ public class DefaultEbeanConfig implements EbeanConfig {
         }
 
         /**
+         * Throw a "Configuration error" exception.
+         *
+         * @param origin  The configuration file containing the error
+         * @param message The message to print on top of the page
+         * @param t       The current exception
+         * @since 17.07.06
+         */
+        private void throwConfigurationException(final Option<ConfigOrigin> origin, final String message, final Throwable t) {
+            throw new PlayException.ExceptionSource(
+                "Configuration error",
+                message,
+                t
+            ) {
+                @Override
+                public Integer line() {
+                    return (Integer) origin
+                        .map(ConfigOrigin::lineNumber)
+                        .orElse(() -> null)
+                        .get();
+                }
+
+                @Override
+                public Integer position() {
+                    return null;
+                }
+
+                @Override
+                public String input() {
+                    return (String) origin
+                        .flatMap(v1 -> Option.apply(v1.url()))
+                        .map(URL::toString)
+                        .orElse(() -> null)
+                        .get();
+                }
+
+                @Override
+                public String sourceName() {
+                    return (String) origin
+                        .map(ConfigOrigin::filename)
+                        .orElse(() -> null)
+                        .get();
+                }
+            };
+        }
+
+        /**
          * Reads the configuration and creates configuration for Ebean servers.
          *
          * @return A configuration for Ebean servers
          * @since 14.11.27
          */
-        public EbeanConfig parse() {
+        EbeanConfig parse() {
             final Map<String, ServerConfig> serverConfigs = new HashMap<>();
-            final Config underliedConfiguration = this.configuration.underlying();
 
-            if (underliedConfiguration.hasPathOrNull("ebean.clustering")) {
-                final Config playEbeanClusteringCfg = underliedConfiguration.getConfig("ebean.clustering");
+            if (this.configuration.hasPathOrNull("ebean.clustering")) {
+                final Config playEbeanClusteringCfg = this.configuration.getConfig("ebean.clustering");
                 if (playEbeanClusteringCfg.hasPath("isActive") && playEbeanClusteringCfg.getBoolean("isActive")) {
                     final ContainerConfig containerConfig = new ContainerConfig();
                     final Properties properties = new Properties();
@@ -139,8 +195,8 @@ public class DefaultEbeanConfig implements EbeanConfig {
                 }
             }
 
-            if (underliedConfiguration.hasPathOrNull("ebean.servers")) {
-                final Config playEbeanSrvCfg = underliedConfiguration.getConfig("ebean.servers");
+            if (this.configuration.hasPathOrNull("ebean.servers")) {
+                final Config playEbeanSrvCfg = this.configuration.getConfig("ebean.servers");
                 playEbeanSrvCfg.root().keySet().forEach(serverName -> {
                     final Config ebeanServerConfig = playEbeanSrvCfg.getConfig(serverName);
                     final ServerConfig serverConfig = new ServerConfig();
@@ -191,12 +247,11 @@ public class DefaultEbeanConfig implements EbeanConfig {
                                     playEbeanSrvSettingsCfg.getBoolean("disableL2Cache")
                                 );
                             }
-                        } catch (final Exception e) {
-                            throw this.configuration.reportError(
-                                "ebean.servers" + serverName + ".settings",
-                                e.getMessage(),
-                                e
-                            );
+                        } catch (final Exception ex) {
+                            final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers" + serverName + ".settings") ?
+                                Option.apply(this.configuration.getValue("ebean.servers" + serverName + ".settings").origin()) :
+                                Option.apply(this.configuration.root().origin());
+                            throwConfigurationException(origin, ex.getMessage(), ex);
                         }
                     } else {
                         serverConfig.setDocStoreOnly(false);
@@ -207,12 +262,26 @@ public class DefaultEbeanConfig implements EbeanConfig {
                         final Set<String> classes = new HashSet<>();
                         ebeanServerConfig.getStringList("enhancement").stream().map(String::trim).forEach(load -> {
                             if (load.endsWith(".*")) {
+                                final String packageName = load.substring(0, load.length() - 2);
+                                final Reflections reflections;
+                                if (this.environment.isTest()) {
+                                    reflections = ReflectionsCache$.MODULE$.getReflections(
+                                        environment.classLoader(),
+                                        packageName
+                                    );
+                                } else {
+                                    reflections = new Reflections(
+                                        new ConfigurationBuilder()
+                                            .addUrls(ClasspathHelper.forPackage(packageName, environment.classLoader()))
+                                            .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageName + ".")))
+                                            .setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner())
+                                    );
+                                }
                                 classes.addAll(
-                                    play.libs.Classpath
-                                        .getTypes(
-                                            this.environment,
-                                            load.substring(0, load.length() - 2)
-                                        )
+                                    reflections
+                                        .getStore()
+                                        .get(TypeElementsScanner.class.getSimpleName())
+                                        .keySet()
                                 );
                             } else {
                                 classes.add(load);
@@ -224,14 +293,11 @@ public class DefaultEbeanConfig implements EbeanConfig {
                     if (ebeanServerConfig.hasPath("docstore")) {
                         try {
                             Class.forName("io.ebeanservice.elastic.ElasticDocumentStore");
-                        } catch (ClassNotFoundException e) {
-                            throw this.configuration.reportError(
-                                "ebean.servers" + serverName + ".docstore",
-                                "The class \"ElasticDocumentStore\" was not found! Please add the following dependency in your project:" +
-                                    "\n\n" +
-                                    "\t\t\"io.ebean\" % \"ebean-elastic\" % \"2.1.1\"",
-                                e
-                            );
+                        } catch (ClassNotFoundException ex) {
+                            final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers" + serverName + ".docstore") ?
+                                Option.apply(this.configuration.getValue("ebean.servers" + serverName + ".docstore").origin()) :
+                                Option.apply(this.configuration.root().origin());
+                            throwConfigurationException(origin, ex.getMessage(), ex);
                         }
                         try {
                             final Config playEbeanSrvDocStoreCfg = ebeanServerConfig.getConfig("docstore");
@@ -264,19 +330,18 @@ public class DefaultEbeanConfig implements EbeanConfig {
                                 docStoreConfig.setAllowAllCertificates(false);
                             }
                             serverConfig.setDocStoreConfig(docStoreConfig);
-                        } catch (final Exception e) {
-                            throw this.configuration.reportError(
-                                "ebean.servers" + serverName + ".docstore",
-                                e.getMessage(),
-                                e
-                            );
+                        } catch (final Exception ex) {
+                            final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers" + serverName + ".docstore") ?
+                                Option.apply(this.configuration.getValue("ebean.servers" + serverName + ".docstore").origin()) :
+                                Option.apply(this.configuration.root().origin());
+                            throwConfigurationException(origin, ex.getMessage(), ex);
                         }
                     }
 
                     serverConfigs.put(serverName, serverConfig);
                 });
             } else {
-                throw new RuntimeException("Bad play-ebean configuration, check your application.conf file");
+                throw new RuntimeException("Bad play-ebean configuration, check your configuration file");
             }
 
             return new DefaultEbeanConfig("default", serverConfigs);
@@ -298,12 +363,11 @@ public class DefaultEbeanConfig implements EbeanConfig {
                             .getDataSource()
                     )
                 );
-            } catch (Exception e) {
-                throw this.configuration.reportError(
-                    "ebean.servers." + key,
-                    e.getMessage(),
-                    e
-                );
+            } catch (Exception ex) {
+                final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers." + key) ?
+                    Option.apply(this.configuration.getValue("ebean.servers." + key).origin()) :
+                    Option.apply(this.configuration.root().origin());
+                throwConfigurationException(origin, ex.getMessage(), ex);
             }
         }
 
@@ -315,15 +379,19 @@ public class DefaultEbeanConfig implements EbeanConfig {
          * @param classes      The class to add
          * @since 14.11.27
          */
-        private void addModelClassesToServerConfig(final String key, final ServerConfig serverConfig, final Set<String> classes) {
+        private void addModelClassesToServerConfig(final String key, final ServerConfig serverConfig,
+                                                   final Set<String> classes) {
             for (final String clazz : classes) {
                 try {
                     serverConfig.addClass(Class.forName(clazz, true, this.environment.classLoader()));
-                } catch (Throwable e) {
-                    throw this.configuration.reportError(
-                        "ebean.servers." + key,
+                } catch (Throwable ex) {
+                    final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers." + key) ?
+                        Option.apply(this.configuration.getValue("ebean.servers." + key).origin()) :
+                        Option.apply(this.configuration.root().origin());
+                    throwConfigurationException(
+                        origin,
                         "Cannot register class [" + clazz + "] in Ebean server",
-                        e
+                        ex
                     );
                 }
             }
@@ -348,7 +416,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
              * @param wrapped The {@code DataSource} object to wrap
              * @since 14.11.27
              */
-            public WrappingDatasource(final javax.sql.DataSource wrapped) {
+            WrappingDatasource(final javax.sql.DataSource wrapped) {
                 this.wrapped = wrapped;
             }
 
@@ -361,7 +429,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
              * @throws java.sql.SQLException If a database connection error occurs
              * @since 14.11.27
              */
-            public java.sql.Connection wrap(final java.sql.Connection connection) throws java.sql.SQLException {
+            java.sql.Connection wrap(final java.sql.Connection connection) throws java.sql.SQLException {
                 connection.setAutoCommit(false);
                 return connection;
             }

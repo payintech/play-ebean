@@ -18,7 +18,7 @@ class EbeanMigrationWebCommand(configuration: Configuration, environment: Enviro
   /**
     * @since 17.01.29
     */
-  private val migrationPath: String = configuration.getString(
+  private val migrationPath: String = configuration.getOptional[String](
     "ebean.dbmigration.migrationPath"
   ).getOrElse("dbmigration")
 
