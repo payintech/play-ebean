@@ -3,11 +3,12 @@ import sbt.Keys.{publishMavenStyle, publishTo}
 import sbt.inc.Analysis
 import interplay.ScalaVersions._
 
-val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.6.1"))
+val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.6.3"))
 val PlayEnhancerVersion = "1.2.1"
-val EbeanVersion = "10.4.2"
-val EbeanAgentVersion = "10.3.1"
-val EbeanDBMigrationVersion = "10.1.11"
+val EbeanVersion = "10.4.7"
+val EbeanAgentVersion = "10.4.1"
+val EbeanDBMigrationVersion = "10.3.1"
+val TypesageConfigVersion = "1.3.1"
 
 lazy val root = project
   .in(file("."))
@@ -176,13 +177,13 @@ def playEbeanDeps = Seq(
   "com.typesafe.play" %% "play-jdbc-evolutions" % PlayVersion,
   "io.ebean" % "ebean" % EbeanVersion,
   "io.ebean" % "ebean-agent" % EbeanAgentVersion,
-  "io.ebean" % "ebean-dbmigration" % EbeanDBMigrationVersion,
+  "io.ebean" % "ebean-migration" % EbeanDBMigrationVersion,
   "com.typesafe.play" %% "play-test" % PlayVersion % Test
 )
 
 def sbtPlayEbeanDeps = Seq(
   "io.ebean" % "ebean-agent" % EbeanAgentVersion,
-  "com.typesafe" % "config" % "1.3.1"
+  "com.typesafe" % "config" % TypesageConfigVersion
 )
 
 // Ebean enhancement

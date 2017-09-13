@@ -4,8 +4,8 @@ import java.sql.SQLException
 import javax.persistence.PersistenceException
 
 import io.ebean.Ebean
-import io.ebean.dbmigration.runner.LocalMigrationResource
-import io.ebean.dbmigration.{MigrationConfig, MigrationRunner}
+import io.ebean.migration.runner.LocalMigrationResource
+import io.ebean.migration.{MigrationConfig, MigrationRunner}
 import play.api.Environment
 
 import scala.collection.JavaConverters._
