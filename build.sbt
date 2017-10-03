@@ -5,8 +5,8 @@ import interplay.ScalaVersions._
 
 val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.6.3"))
 val PlayEnhancerVersion = "1.2.1"
-val EbeanVersion = "10.4.7"
-val EbeanAgentVersion = "10.4.1"
+val EbeanVersion = "11.1.1"
+val EbeanAgentVersion = "11.1.1"
 val EbeanDBMigrationVersion = "10.3.1"
 val TypesageConfigVersion = "1.3.1"
 
