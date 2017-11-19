@@ -5,8 +5,8 @@ jdk:
   - oraclejdk8
 
 script:
-  - sbt --error publishLocal plugin/publishLocal
-  - cd sbt-play-ebean-test && sbt test:test
+  - sbt --error +publishLocal +plugin/publishLocal
+  - cd sbt-play-ebean-test && sbt +test:test
 
 cache:
   directories:

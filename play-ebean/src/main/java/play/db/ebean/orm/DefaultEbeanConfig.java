@@ -23,7 +23,6 @@ import scala.Option;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -130,10 +129,10 @@ public class DefaultEbeanConfig implements EbeanConfig {
             ) {
                 @Override
                 public Integer line() {
-                    return (Integer) origin
+                    return 0; /*(Integer) origin
                         .map(ConfigOrigin::lineNumber)
                         .orElse(() -> null)
-                        .get();
+                        .get();*/
                 }
 
                 @Override
@@ -143,19 +142,19 @@ public class DefaultEbeanConfig implements EbeanConfig {
 
                 @Override
                 public String input() {
-                    return (String) origin
+                    return "";/*(String) origin
                         .flatMap(v1 -> Option.apply(v1.url()))
                         .map(URL::toString)
                         .orElse(() -> null)
-                        .get();
+                        .get();*/
                 }
 
                 @Override
                 public String sourceName() {
-                    return (String) origin
-                        .map(ConfigOrigin::filename)
+                    return "";/*(String) origin
+                        .map(f -> f.filename())
                         .orElse(() -> null)
-                        .get();
+                        .get();*/
                 }
             };
         }

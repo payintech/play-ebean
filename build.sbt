@@ -5,21 +5,21 @@ import interplay.ScalaVersions._
 
 val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.6.6"))
 val PlayEnhancerVersion = "1.2.2"
-val EbeanVersion = "11.4.1"
-val EbeanAgentVersion = "11.4.1"
+val EbeanVersion = "11.6.1"
+val EbeanAgentVersion = "11.5.1"
 val EbeanDBMigrationVersion = "11.1.1"
 val TypesageConfigVersion = "1.3.2"
 
 lazy val root = project
   .in(file("."))
-  .enablePlugins(PlayRootProject)
+  .enablePlugins(PlayRootProject, CrossPerProjectPlugin)
   .aggregate(core)
   .settings(
     name := "play-ebean-root",
     description := "Play Ebean module",
     organization := "com.payintech",
     homepage := Some(url(s"https://github.com/payintech/play-ebean")),
-    releaseCrossBuild := true,
+    releaseCrossBuild := false,
     publishMavenStyle := false
   )
   .settings(
@@ -69,7 +69,7 @@ lazy val core = project
     description := "Play Ebean module",
     organization := "com.payintech",
     homepage := Some(url(s"https://github.com/payintech/play-ebean")),
-    crossScalaVersions := Seq(scala211),
+    crossScalaVersions := Seq(scala211, scala212),
     libraryDependencies ++= playEbeanDeps,
     compile in Compile := enhanceEbeanClasses(
       (dependencyClasspath in Compile).value,
@@ -124,8 +124,10 @@ lazy val plugin = project
     organization := "com.payintech",
     homepage := Some(url(s"https://github.com/payintech/play-ebean")),
     libraryDependencies ++= sbtPlayEbeanDeps,
-    addSbtPlugin("com.typesafe.sbt" % "sbt-play-enhancer" % PlayEnhancerVersion),
-    addSbtPlugin("com.typesafe.play" % "sbt-plugin" % PlayVersion),
+    libraryDependencies ++= Seq(
+      sbtPluginDep("com.typesafe.sbt" % "sbt-play-enhancer" % PlayEnhancerVersion, (sbtVersion in pluginCrossBuild).value, scalaVersion.value),
+      sbtPluginDep("com.typesafe.play" % "sbt-plugin" % PlayVersion, (sbtVersion in pluginCrossBuild).value, scalaVersion.value)
+    ),
     resourceGenerators in Compile += generateVersionFile.taskValue,
     scriptedLaunchOpts ++= Seq("-Dplay-ebean.version=" + version.value),
     scriptedDependencies := {
@@ -185,6 +187,11 @@ def sbtPlayEbeanDeps = Seq(
   "io.ebean" % "ebean-agent" % EbeanAgentVersion,
   "com.typesafe" % "config" % TypesageConfigVersion
 )
+
+// sbt deps
+def sbtPluginDep(moduleId: ModuleID, sbtVersion: String, scalaVersion: String) = {
+  Defaults.sbtPluginExtra(moduleId, CrossVersion.binarySbtVersion(sbtVersion), CrossVersion.binaryScalaVersion(scalaVersion))
+}
 
 // Ebean enhancement
 def enhanceEbeanClasses(classpath: Classpath, analysis: Analysis, classDirectory: File, pkg: String): Analysis = {
