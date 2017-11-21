@@ -22,8 +22,11 @@ using an older version of Play Framework, think to use the right plugin version.
 
 ### Play Framework 2.6.x
 
+**Note:** Since the version 17.12, the plugin is compatible with SBT 1.0
+
 | Plugin | Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
 |--------|----------------|-----------|-------------|-----------------|
+| 17.12  | 2.6.6          | 11.6.1    | 11.5.1      | 11.1.1          |
 | 17.11  | 2.6.6          | 11.4.1    | 11.4.1      | 11.1.1          |
 | 17.10  | 2.6.3          | 11.1.1    | 11.1.1      | 10.3.1          |
 | 17.09  | 2.6.3          | 10.4.7    | 10.4.1      | 10.3.1          |

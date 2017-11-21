@@ -129,10 +129,12 @@ public class DefaultEbeanConfig implements EbeanConfig {
             ) {
                 @Override
                 public Integer line() {
-                    return 0; /*(Integer) origin
-                        .map(ConfigOrigin::lineNumber)
-                        .orElse(() -> null)
-                        .get();*/
+                    if (origin.nonEmpty()) {
+                        return origin
+                            .get()
+                            .lineNumber();
+                    }
+                    return null;
                 }
 
                 @Override
@@ -142,19 +144,18 @@ public class DefaultEbeanConfig implements EbeanConfig {
 
                 @Override
                 public String input() {
-                    return "";/*(String) origin
-                        .flatMap(v1 -> Option.apply(v1.url()))
-                        .map(URL::toString)
-                        .orElse(() -> null)
-                        .get();*/
+                    if (origin.nonEmpty()) {
+                        return origin.get().url().toString();
+                    }
+                    return null;
                 }
 
                 @Override
                 public String sourceName() {
-                    return "";/*(String) origin
-                        .map(f -> f.filename())
-                        .orElse(() -> null)
-                        .get();*/
+                    if (origin.nonEmpty()) {
+                        return origin.get().filename();
+                    }
+                    return null;
                 }
             };
         }
