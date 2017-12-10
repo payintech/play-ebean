@@ -1,6 +1,6 @@
 # play-ebean
 
-[![Latest release](https://img.shields.io/badge/latest_release-17.11-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-17.12-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
 [![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202%2E0-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
 
@@ -22,7 +22,7 @@ using an older version of Play Framework, think to use the right plugin version.
 
 ### Play Framework 2.6.x
 
-**Note:** Since the version 17.12, the plugin is compatible with SBT 1.0
+**Note:** Since the version 17.12, the plugin need SBT 1.0
 
 | Plugin | Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
 |--------|----------------|-----------|-------------|-----------------|
