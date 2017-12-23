@@ -3,11 +3,11 @@ import sbt.Keys.{publishMavenStyle, publishTo}
 import sbt.inc.Analysis
 import interplay.ScalaVersions._
 
-val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.6.6"))
+val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.6.10"))
 val PlayEnhancerVersion = "1.2.2"
-val EbeanVersion = "11.6.1"
+val EbeanVersion = "11.7.1"
 val EbeanAgentVersion = "11.5.1"
-val EbeanDBMigrationVersion = "11.1.1"
+val EbeanDBMigrationVersion = "11.2.1"
 val TypesageConfigVersion = "1.3.2"
 
 lazy val root = project

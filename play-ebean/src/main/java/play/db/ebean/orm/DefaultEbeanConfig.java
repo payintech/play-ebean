@@ -189,7 +189,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
                                 .collect(Collectors.joining(","))
                         );
                     }
-                    containerConfig.setClusterActive(true);
+                    containerConfig.setActive(true);
                     containerConfig.setProperties(properties);
                     EbeanServerFactory.initialiseContainer(containerConfig);
                 }
