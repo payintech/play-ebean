@@ -6,7 +6,7 @@ import javax.persistence.PersistenceException
 import io.ebean.Ebean
 import io.ebean.migration.runner.LocalMigrationResource
 import io.ebean.migration.{MigrationConfig, MigrationRunner}
-import play.api.Environment
+import play.api.{Environment, Mode}
 
 import scala.collection.JavaConverters._
 
@@ -48,6 +48,7 @@ object EbeanToolbox {
     val folder = guessMigrationFolderToUse(
       migrationPath,
       environment,
+      guessModeToUse(environment.mode),
       serverName,
       ebeanServer.getPluginApi.getPluginApi.getDatabasePlatform.getPlatform.name.toLowerCase
     )
@@ -74,16 +75,17 @@ object EbeanToolbox {
     * Migrate the given Ebean server.
     *
     * @since 17.06.07
-    * @param migrationPath Migration files root path
-    * @param environment   The current environment
-    * @param serverName    The Ebean server name
+    * @param migrationPath   Migration files root path
+    * @param playEnvironment The current Play environment
+    * @param serverName      The Ebean server name
     * @throws MigrationRunnerError If something goes wrong during migration
     */
-  def checkEbeanServerState(migrationPath: String, environment: Environment, serverName: String): Iterable[LocalMigrationResource] = {
+  def checkEbeanServerState(migrationPath: String, playEnvironment: Environment, serverName: String): Iterable[LocalMigrationResource] = {
     val ebeanServer = Ebean.getServer(serverName)
     val folder = guessMigrationFolderToUse(
       migrationPath,
-      environment,
+      playEnvironment,
+      guessModeToUse(playEnvironment.mode),
       serverName,
       ebeanServer.getPluginApi.getPluginApi.getDatabasePlatform.getPlatform.name.toLowerCase
     )
@@ -109,17 +111,35 @@ object EbeanToolbox {
   }
 
   /**
+    * Resolve mode to use. By instance, Play can run in Prod mode
+    * but user want run Test migration SQL scripts.
+    *
+    * @param playMode The current Play running mode
+    * @return The mode to use
+    * @since 18.01.13
+    */
+  private[this] def guessModeToUse(playMode: Mode): String = sys.env.getOrElse(
+    "EBEAN_MIGRATION_MODE",
+    playMode.toString
+  ).toLowerCase.replaceAll("[^a-z0-9]", "")
+
+  /**
     * Try to guess the migration folder to use.
     *
     * @since 17.06.07
+    * @param migrationPath The migration path
+    * @param environment   The current Play environment
+    * @param mode          The migration mode
+    * @param serverName    The Ebean server name
+    * @param platformName  The current platform (ie: PostgreSQL)
     * @return The migration folder to use
     */
-  private[this] def guessMigrationFolderToUse(migrationPath: String, environment: Environment,
-                                              serverName: String, plateformName: String): Option[String] = {
+  private[this] def guessMigrationFolderToUse(migrationPath: String, environment: Environment, mode: String,
+                                              serverName: String, platformName: String): Option[String] = {
     val folderToTry = List[String](
-      s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$plateformName/$serverName-${environment.mode.toString.toLowerCase}",
-      s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$plateformName/$serverName",
-      s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName-${environment.mode.toString.toLowerCase}",
+      s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$platformName/$serverName-$mode",
+      s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$platformName/$serverName",
+      s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName-$mode",
       s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName"
     )
     folderToTry

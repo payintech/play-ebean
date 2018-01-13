@@ -1,6 +1,6 @@
 # play-ebean
 
-[![Latest release](https://img.shields.io/badge/latest_release-18.01-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-18.01%20Update%201-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
 [![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202%2E0-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
 
@@ -24,16 +24,17 @@ using an older version of Play Framework, think to use the right plugin version.
 
 **Note:** Since the version 17.12, the plugin need SBT 1.0
 
-| Plugin | Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
-|--------|----------------|-----------|-------------|-----------------|
-| 18.01  | 2.6.10         | 11.7.1    | 11.5.1      | 11.2.1          |
-| 17.12  | 2.6.6          | 11.6.1    | 11.5.1      | 11.1.1          |
-| 17.11  | 2.6.6          | 11.4.1    | 11.4.1      | 11.1.1          |
-| 17.10  | 2.6.3          | 11.1.1    | 11.1.1      | 10.3.1          |
-| 17.09  | 2.6.3          | 10.4.7    | 10.4.1      | 10.3.1          |
-| 17.08  | 2.6.1          | 10.4.2    | 10.3.1      | 10.1.11         |
-| 17.07  | 2.6.1          | 10.4.1    | 10.3.1      | 10.1.11         |
-| 17.06  | 2.6.0          | 10.3.1    | 10.2.1      | 10.1.8          |
+| Plugin  | Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
+|---------|----------------|-----------|-------------|-----------------|
+| 18.01u1 | 2.6.10         | 11.8.1    | 11.5.1      | 11.2.1          |
+| 18.01   | 2.6.10         | 11.7.1    | 11.5.1      | 11.2.1          |
+| 17.12   | 2.6.6          | 11.6.1    | 11.5.1      | 11.1.1          |
+| 17.11   | 2.6.6          | 11.4.1    | 11.4.1      | 11.1.1          |
+| 17.10   | 2.6.3          | 11.1.1    | 11.1.1      | 10.3.1          |
+| 17.09   | 2.6.3          | 10.4.7    | 10.4.1      | 10.3.1          |
+| 17.08   | 2.6.1          | 10.4.2    | 10.3.1      | 10.1.11         |
+| 17.07   | 2.6.1          | 10.4.1    | 10.3.1      | 10.1.11         |
+| 17.06   | 2.6.0          | 10.3.1    | 10.2.1      | 10.1.8          |
 
 
 ### Play Framework 2.5.x
@@ -181,6 +182,14 @@ ebean {
 
 
 
+### Override migration mode
+
+In case you need to use run "Dev" migration scripts when your Play application
+run on "Prod" mode, you could use the environment variable `EBEAN_MIGRATION_MODE`
+to override the default value with _Dev_, _Test_, _Prod_ or whatever alphanumeric.
+
+
+
 ### Override Ebean version
 
 In case you need to use a newest version of Ebean, you have the possibility
@@ -201,6 +210,6 @@ dependencyOverrides ++= Set(
 
 
 
-
 ## License
+
 This project is released under terms of the [Apache 2.0](https://opensource.org/licenses/Apache-2.0).
