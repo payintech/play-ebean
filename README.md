@@ -89,7 +89,7 @@ ebean {
 
         # Set to true if this server is Document store only
         onlyUseDocStore = false
-        
+
         # Set to true to quote all fields (useful if you use
         # reserved keywords as field names)
         allQuotedIdentifiers = false
@@ -129,7 +129,7 @@ ebean {
 
         # Create only indexes that have not already been defined
         create = false
-        
+
         # Allow connections to document stores (like ElasticSearch) that have
         # self signed certificates
         allowAllCertificates = false
