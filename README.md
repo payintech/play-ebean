@@ -209,7 +209,7 @@ libraryDependencies ++= Seq(
   "io.ebean" % "ebean" % "X.Y.Z"
 )
 
-dependencyOverrides ++= Set(
+dependencyOverrides ++= Seq(
   ...
   "io.ebean" % "ebean" % "X.Y.Z"
 )
