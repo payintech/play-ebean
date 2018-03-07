@@ -1,7 +1,6 @@
 package play.db.ebean.dbmigration
 
 import javax.inject.{Inject, Singleton}
-
 import play.api.{Configuration, Environment, Logger, Mode}
 import play.core.WebCommands
 
@@ -37,6 +36,13 @@ class PlayInitializer @Inject()
   ).getOrElse(false)
 
   /**
+    * @since 18.03.07
+    */
+  private val platformName: String = configuration.getOptional[String](
+    "ebean.dbmigration.platformName"
+  ).orNull
+
+  /**
     * @since 17.01.29
     */
   private val allowAlreadyProcessedFiles = environment.mode == Mode.Dev
@@ -50,7 +56,12 @@ class PlayInitializer @Inject()
     if (this.isEnabled) {
       val maybeSubKeys = configuration.getOptional[Configuration]("ebean.servers")
       if (maybeSubKeys.isDefined) maybeSubKeys.get.subKeys.foreach(key => {
-        val changedMigrationResource = EbeanToolbox.checkEbeanServerState(this.migrationPath, this.environment, key)
+        val changedMigrationResource = EbeanToolbox.checkEbeanServerState(
+          this.platformName,
+          this.migrationPath,
+          this.environment,
+          key
+        )
         if (changedMigrationResource.nonEmpty) {
           var data = ""
           for (res <- changedMigrationResource) {
@@ -68,6 +79,7 @@ class PlayInitializer @Inject()
             if (this.autoApply) {
               Logger.info(s"Applying migration on database '$key'")
               EbeanToolbox.migrateEbeanServer(
+                this.platformName,
                 this.migrationPath,
                 this.environment,
                 key,

@@ -179,6 +179,10 @@ ebean {
 
     # Is the migration must be auto applied?
     autoApply = false
+    
+    # Override the platform name detection
+    # https://github.com/ebean-orm/ebean-migration/blob/master/src/main/java/io/ebean/migration/DbPlatformNames.java
+    platformName = null
   }
 }
 ```

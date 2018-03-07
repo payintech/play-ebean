@@ -1,11 +1,11 @@
 package play.db.ebean.dbmigration
 
 import java.sql.SQLException
-import javax.persistence.PersistenceException
 
 import io.ebean.Ebean
 import io.ebean.migration.runner.LocalMigrationResource
 import io.ebean.migration.{MigrationConfig, MigrationRunner}
+import javax.persistence.PersistenceException
 import play.api.{Environment, Mode}
 
 import scala.collection.JavaConverters._
@@ -22,6 +22,7 @@ object EbeanToolbox {
     * Migrate the given Ebean server.
     *
     * @since 17.01.30
+    * @param platformName               The platform name
     * @param migrationPath              Migration files root path
     * @param environment                The current environment
     * @param serverName                 The Ebean server name
@@ -29,7 +30,8 @@ object EbeanToolbox {
     * @param allowAlreadyProcessedFiles Is processing already processed files is allowed?
     * @throws MigrationRunnerError If something goes wrong during migration
     */
-  def migrateEbeanServer(migrationPath: String, environment: Environment, serverName: String, forceKey: String, allowAlreadyProcessedFiles: Boolean): Unit = {
+  def migrateEbeanServer(platformName: String, migrationPath: String, environment: Environment,
+                         serverName: String, forceKey: String, allowAlreadyProcessedFiles: Boolean): Unit = {
     val ebeanServer = Ebean.getServer(serverName)
 
     if (forceKey != null && forceKey.trim.nonEmpty && allowAlreadyProcessedFiles) { //TODO: Remove?
@@ -55,6 +57,9 @@ object EbeanToolbox {
     if (folder.isDefined) {
       val migrationConfig: MigrationConfig = new MigrationConfig
       migrationConfig.setMigrationPath(folder.get)
+      if (platformName != null && platformName.nonEmpty) {
+        migrationConfig.setPlatformName(platformName)
+      }
       val migrationRunner = new MigrationRunner(migrationConfig)
       try {
         migrationRunner.run(
@@ -75,12 +80,14 @@ object EbeanToolbox {
     * Migrate the given Ebean server.
     *
     * @since 17.06.07
+    * @param platformName    The platform name
     * @param migrationPath   Migration files root path
     * @param playEnvironment The current Play environment
     * @param serverName      The Ebean server name
     * @throws MigrationRunnerError If something goes wrong during migration
     */
-  def checkEbeanServerState(migrationPath: String, playEnvironment: Environment, serverName: String): Iterable[LocalMigrationResource] = {
+  def checkEbeanServerState(platformName: String, migrationPath: String, playEnvironment: Environment,
+                            serverName: String): Iterable[LocalMigrationResource] = {
     val ebeanServer = Ebean.getServer(serverName)
     val folder = guessMigrationFolderToUse(
       migrationPath,
@@ -92,6 +99,9 @@ object EbeanToolbox {
     if (folder.isDefined) {
       val migrationConfig: MigrationConfig = new MigrationConfig
       migrationConfig.setMigrationPath(folder.get)
+      if (platformName != null && platformName.nonEmpty) {
+        migrationConfig.setPlatformName(platformName)
+      }
       val migrationRunner = new MigrationRunner(migrationConfig)
       try {
         migrationRunner.checkState(

@@ -23,6 +23,13 @@ class EbeanMigrationWebCommand(configuration: Configuration, environment: Enviro
   ).getOrElse("dbmigration")
 
   /**
+    * @since 18.03.07
+    */
+  private val platformName: String = configuration.getOptional[String](
+    "ebean.dbmigration.platformName"
+  ).orNull
+
+  /**
     * @since 17.01.29
     */
   private val allowAlreadyProcessedFiles = environment.mode == Mode.Dev
@@ -39,6 +46,7 @@ class EbeanMigrationWebCommand(configuration: Configuration, environment: Enviro
     request.path match {
       case EbeanMigrationWebPath.migratePath(serverName) =>
         EbeanToolbox.migrateEbeanServer(
+          this.platformName,
           this.migrationPath,
           this.environment,
           serverName,
