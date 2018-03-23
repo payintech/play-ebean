@@ -22,12 +22,6 @@ public class Task extends Model {
     @Constraints.Required
     public String name;
 
-    @WhoCreated
-    public String whoCreated;
-
-    @WhoModified
-    public String whoModified;
-
     public boolean done;
 
     @Formats.DateTime(pattern = "dd/MM/yyyy")

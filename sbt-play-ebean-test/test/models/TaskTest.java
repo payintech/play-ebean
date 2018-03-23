@@ -1,5 +1,6 @@
 package models;
 
+import io.ebean.Ebean;
 import org.junit.Test;
 import play.Application;
 import play.test.Helpers;
@@ -33,7 +34,10 @@ public class TaskTest extends WithApplication {
 
         Task saved = Task.find.byId(10L);
         assertEquals("Hello", saved.name);
-        assertEquals("John", saved.whoCreated);
-        assertEquals("John", saved.whoModified);
+    }
+
+    @Test
+    public void defaultServer() {
+        assertEquals("default", Ebean.getDefaultServer().getName());
     }
 }
