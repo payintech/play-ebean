@@ -11,7 +11,9 @@ This module provides Ebean support for Play Framework 2.5 and superior.
 
 ## About this project
 
-This project was forked from the original repository [playframework/play-ebean](https://github.com/playframework/play-ebean).
+This project was forked from the original repository [playframework/play-ebean](https://github.com/playframework/play-ebean). It allows usage of Ebean ORM and
+Ebean Migration into a Play Framework project. Ebean is compatible with all major
+databases: CockroachDB, MariaDB, MSSQL, MySQL, PostgreSQL, SQLite, ...
 
 
 
