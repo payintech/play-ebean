@@ -6,9 +6,9 @@ import interplay.ScalaVersions._
 val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.6.10"))
 val PlayEnhancerVersion = "1.2.2"
 val EbeanVersion = "11.15.1"
-val EbeanAgentVersion = "11.10.1"
+val EbeanAgentVersion = "11.11.1"
 val EbeanDBMigrationVersion = "11.5.1"
-val TypesageConfigVersion = "1.3.2"
+val TypesafeConfigVersion = "1.3.2"
 
 lazy val root = project
   .in(file("."))
@@ -185,7 +185,7 @@ def playEbeanDeps = Seq(
 
 def sbtPlayEbeanDeps = Seq(
   "io.ebean" % "ebean-agent" % EbeanAgentVersion,
-  "com.typesafe" % "config" % TypesageConfigVersion
+  "com.typesafe" % "config" % TypesafeConfigVersion
 )
 
 // sbt deps

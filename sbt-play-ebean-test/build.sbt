@@ -7,7 +7,7 @@ lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 libraryDependencies ++= Seq(
   guice,
   "com.h2database" % "h2" % "1.4.196",
-  "io.ebean" % "ebean-elastic" % "11.0.1-RC"
+  "io.ebean" % "ebean-elastic" % "11.15.1"
 )
 
 scalaVersion := "2.12.1"
