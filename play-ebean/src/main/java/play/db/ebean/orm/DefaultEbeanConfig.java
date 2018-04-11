@@ -204,6 +204,8 @@ public class DefaultEbeanConfig implements EbeanConfig {
                     serverConfig.loadFromProperties();
                     if (serverName.compareTo("default") == 0) {
                         serverConfig.setDefaultServer(true);
+                    } else {
+                        serverConfig.setDefaultServer(false);
                     }
 
                     if (ebeanServerConfig.hasPath("settings")) {
