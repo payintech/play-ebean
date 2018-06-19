@@ -30,6 +30,7 @@ lazy val root = project
       System.getenv("OSS_ST_PASSWORD")
     ),
     useGpg := true,
+    useGpgAgent := true,
     usePgpKeyHex("B4B939B5"),
     publishTo := {
       val nexus = "https://oss.sonatype.org/"
@@ -93,6 +94,7 @@ lazy val core = project
         Some("releases" at nexus + "service/local/staging/deploy/maven2")
     },
     useGpg := true,
+    useGpgAgent := true,
     usePgpKeyHex("B4B939B5"),
     publishMavenStyle := true,
     publishArtifact in Test := false,
