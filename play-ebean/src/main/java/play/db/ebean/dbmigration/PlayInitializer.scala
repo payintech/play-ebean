@@ -65,12 +65,13 @@ class PlayInitializer @Inject()
         if (changedMigrationResource.nonEmpty) {
           var data = ""
           for (res <- changedMigrationResource) {
-            data +=
+            data = data.concat(
               s"""▅▆▇█ ${res.getLocation.split("/").takeRight(1).apply(0)} █▇▆▅
                  |${res.getContent}
                  |
                         |
                         |""".stripMargin
+            )
           }
           if (data.nonEmpty) {
             val ebeanMigrationWC = new EbeanMigrationWebCommand(this.configuration, this.environment)

@@ -1,6 +1,6 @@
 # play-ebean
 
-[![Latest release](https://img.shields.io/badge/latest_release-18.07-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-18.08-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
 [![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202%2E0-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
 
@@ -11,8 +11,8 @@ This module provides Ebean support for Play Framework 2.5 and superior.
 
 ## About this project
 
-This project was forked from the original repository [playframework/play-ebean](https://github.com/playframework/play-ebean). It allows usage of Ebean ORM and
-Ebean Migration into a Play Framework project. Ebean is compatible with all major
+This project was forked from the original repository [playframework/play-ebean](https://github.com/playframework/play-ebean).
+It allows usage of Ebean ORM and Ebean Migration into a Play Framework project. Ebean is compatible with all major
 databases: CockroachDB, MariaDB, MSSQL, MySQL, PostgreSQL, SQLite, ...
 
 
@@ -28,7 +28,7 @@ using an older version of Play Framework, think to use the right plugin version.
 
 | Plugin  | Min. Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
 |---------|---------------------|-----------|-------------|-----------------|
-| 18.07   | 2.6.15              | 11.18.1   | 11.11.1     | 11.6.1          |
+| 18.08   | 2.6.15              | 11.22.1   | 11.11.1     | 11.9.1          |
 | 18.06   | 2.6.15              | 11.17.5   | 11.11.1     | 11.5.4          |
 | 18.05   | 2.6.12              | 11.15.10  | 11.11.1     | 11.5.4          |
 | 18.04u1 | 2.6.12              | 11.15.3   | 11.11.1     | 11.5.1          |
