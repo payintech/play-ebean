@@ -1,6 +1,6 @@
 # play-ebean
 
-[![Latest release](https://img.shields.io/badge/latest_release-18.08-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-18.10-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
 [![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202%2E0-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
 
@@ -28,6 +28,7 @@ using an older version of Play Framework, think to use the right plugin version.
 
 | Plugin  | Min. Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
 |---------|---------------------|-----------|-------------|-----------------|
+| 18.10   | 2.6.20              | 11.22.10  | 11.11.1     | 11.9.1          |
 | 18.08   | 2.6.15              | 11.22.1   | 11.11.1     | 11.9.1          |
 | 18.06   | 2.6.15              | 11.17.5   | 11.11.1     | 11.5.4          |
 | 18.05   | 2.6.12              | 11.15.10  | 11.11.1     | 11.5.4          |
@@ -65,7 +66,9 @@ using an older version of Play Framework, think to use the right plugin version.
 
 ### Add the module to your Play application
 
-play-ebean can be easily added to your Play application by adding the following line in the file `project/plugin.sbt`. You have to replace _YY.MM_ with the release number you want to use from available [releases](https://github.com/payintech/play-ebean/releases).
+play-ebean can be easily added to your Play application by adding the following line in the file `project/plugin.sbt`.
+You have to replace _YY.MM_ with the release number you want to use from available 
+[releases](https://github.com/payintech/play-ebean/releases).
 
 ```
 addSbtPlugin("com.payintech" % "sbt-play-ebean" % "YY.MM")
