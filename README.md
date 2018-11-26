@@ -1,6 +1,6 @@
 # play-ebean
 
-[![Latest release](https://img.shields.io/badge/latest_release-18.10-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-18.11-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
 [![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202%2E0-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
 
@@ -28,6 +28,7 @@ using an older version of Play Framework, think to use the right plugin version.
 
 | Plugin  | Min. Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
 |---------|---------------------|-----------|-------------|-----------------|
+| 18.11   | 2.6.20              | 11.26.1   | 11.26.1     | 11.11.1         |
 | 18.10   | 2.6.20              | 11.22.10  | 11.11.1     | 11.9.1          |
 | 18.08   | 2.6.15              | 11.22.1   | 11.11.1     | 11.9.1          |
 | 18.06   | 2.6.15              | 11.17.5   | 11.11.1     | 11.5.4          |
