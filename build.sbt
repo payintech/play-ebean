@@ -5,9 +5,9 @@ import interplay.ScalaVersions._
 
 val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.6.20"))
 val PlayEnhancerVersion = "1.2.2"
-val EbeanVersion = "11.22.10"
-val EbeanAgentVersion = "11.11.1"
-val EbeanDBMigrationVersion = "11.9.1"
+val EbeanVersion = "11.26.1"
+val EbeanAgentVersion = "11.26.1"
+val EbeanDBMigrationVersion = "11.11.1"
 val TypesafeConfigVersion = "1.3.2"
 
 lazy val root = project
