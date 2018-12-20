@@ -149,6 +149,11 @@ ebean {
         # self signed certificates
         allowAllCertificates = false
       }
+      
+      # Extra Ebean server configuration
+      # Use full classpath (ie: ebean.DemoEbeanServerExtraConfig)
+      extra-config = [
+      ]
     }
   }
 

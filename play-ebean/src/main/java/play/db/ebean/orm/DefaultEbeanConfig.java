@@ -26,6 +26,8 @@ import javax.inject.Singleton;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.Class.forName;
+
 /**
  * Ebean server configuration.
  *
@@ -294,7 +296,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
 
                     if (ebeanServerConfig.hasPath("docstore")) {
                         try {
-                            Class.forName("io.ebeanservice.elastic.ElasticDocumentStore");
+                            forName("io.ebeanservice.elastic.ElasticDocumentStore");
                         } catch (ClassNotFoundException ex) {
                             final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers" + serverName + ".docstore") ?
                                 Option.apply(this.configuration.getValue("ebean.servers" + serverName + ".docstore").origin()) :
@@ -338,6 +340,21 @@ public class DefaultEbeanConfig implements EbeanConfig {
                                 Option.apply(this.configuration.root().origin());
                             throwConfigurationException(origin, ex.getMessage(), ex);
                         }
+                    }
+
+                    if (ebeanServerConfig.hasPath("extra-config")) {
+                        ebeanServerConfig.getStringList("extra-config").forEach(className -> {
+                            try {
+                                final EbeanServerExtraConfig esac = (EbeanServerExtraConfig) forName(
+                                    className,
+                                    true,
+                                    this.environment.classLoader()
+                                ).newInstance();
+                                esac.applyExtraConfiguration(serverConfig, this.configuration);
+                            } catch (final ClassNotFoundException | IllegalAccessException | InstantiationException ex) {
+                                ex.printStackTrace();
+                            }
+                        });
                     }
 
                     serverConfigs.put(serverName, serverConfig);
@@ -385,7 +402,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
                                                    final Set<String> classes) {
             for (final String clazz : classes) {
                 try {
-                    serverConfig.addClass(Class.forName(clazz, true, this.environment.classLoader()));
+                    serverConfig.addClass(forName(clazz, true, this.environment.classLoader()));
                 } catch (Throwable ex) {
                     final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers." + key) ?
                         Option.apply(this.configuration.getValue("ebean.servers." + key).origin()) :
