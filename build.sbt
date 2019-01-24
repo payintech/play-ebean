@@ -174,6 +174,12 @@ playBuildExtraPublish := {
   (PgpKeys.publishSigned in plugin).value
 }
 
+lazy val reflectionDeps = Seq(
+  ("org.reflections" % "reflections" % "0.9.11")
+    .exclude("com.google.code.findbugs", "annotations")
+    .classifier("")
+)
+
 // Dependencies
 def playEbeanDeps = Seq(
   "com.typesafe.play" %% "play-guice" % PlayVersion,
@@ -183,7 +189,7 @@ def playEbeanDeps = Seq(
   "io.ebean" % "ebean-agent" % EbeanAgentVersion,
   "io.ebean" % "ebean-migration" % EbeanDBMigrationVersion,
   "com.typesafe.play" %% "play-test" % PlayVersion % Test
-)
+) ++ reflectionDeps
 
 def sbtPlayEbeanDeps = Seq(
   "io.ebean" % "ebean-agent" % EbeanAgentVersion,
