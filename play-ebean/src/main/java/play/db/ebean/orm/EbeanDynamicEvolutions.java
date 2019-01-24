@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
@@ -153,7 +154,7 @@ public class EbeanDynamicEvolutions extends DynamicEvolutions {
                             if (evolutions.exists()) {
                                 content = new String(
                                     Files.readAllBytes(evolutions.toPath()),
-                                    "utf-8"
+                                    StandardCharsets.UTF_8
                                 );
                             }
 
@@ -167,7 +168,7 @@ public class EbeanDynamicEvolutions extends DynamicEvolutions {
                                 if (!content.equals(evolutionScript)) {
                                     Files.write(
                                         evolutions.toPath(),
-                                        evolutionScript.getBytes("utf-8")
+                                        evolutionScript.getBytes(StandardCharsets.UTF_8)
                                     );
                                 }
                             }
