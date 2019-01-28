@@ -1,3 +1,3 @@
 // The Play plugin
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.20")
-addSbtPlugin("com.payintech" % "sbt-play-ebean" % "19.01u1-SNAPSHOT")
+addSbtPlugin("com.payintech" % "sbt-play-ebean" % "19.02-SNAPSHOT")
