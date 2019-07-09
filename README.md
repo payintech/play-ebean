@@ -28,6 +28,7 @@ using an older version of Play Framework, think to use the right plugin version.
 
 | Plugin  | Min. Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
 |---------|---------------------|-----------|-------------|-----------------|
+| 19.07   | 2.6.20              | 11.41.1   | 11.41.1     | 11.16.2         |
 | 19.06   | 2.6.20              | 11.39.1   | 11.39.1     | 11.16.1         |
 | 19.04   | 2.6.20              | 11.36.4   | 11.36.4     | 11.14.1         |
 | 19.03   | 2.6.20              | 11.35.1   | 11.34.1     | 11.14.1         |
