@@ -5,6 +5,7 @@ package play.db.ebean.orm;
 
 import io.ebean.Ebean;
 import play.mvc.Action;
+import play.mvc.Http;
 import play.mvc.Http.Context;
 import play.mvc.Result;
 
@@ -18,7 +19,7 @@ import java.util.concurrent.CompletionStage;
 public class TransactionalAction extends Action<Transactional> {
 
     @Override
-    public CompletionStage<Result> call(final Context ctx) {
-        return Ebean.executeCall(() -> delegate.call(ctx));
+    public CompletionStage<Result> call(final Http.Request req) {
+        return Ebean.executeCall(() -> delegate.call(req));
     }
 }

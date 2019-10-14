@@ -17,7 +17,6 @@ import org.reflections.util.FilterBuilder;
 import play.Environment;
 import play.api.PlayException;
 import play.db.DBApi;
-import play.libs.ReflectionsCache$;
 import scala.Option;
 
 import javax.inject.Inject;
@@ -267,20 +266,12 @@ public class DefaultEbeanConfig implements EbeanConfig {
                         ebeanServerConfig.getStringList("enhancement").stream().map(String::trim).forEach(load -> {
                             if (load.endsWith(".*")) {
                                 final String packageName = load.substring(0, load.length() - 2);
-                                final Reflections reflections;
-                                if (this.environment.isTest()) {
-                                    reflections = ReflectionsCache$.MODULE$.getReflections(
-                                        environment.classLoader(),
-                                        packageName
-                                    );
-                                } else {
-                                    reflections = new Reflections(
-                                        new ConfigurationBuilder()
-                                            .addUrls(ClasspathHelper.forPackage(packageName, environment.classLoader()))
-                                            .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageName + ".")))
-                                            .setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner())
-                                    );
-                                }
+                                final Reflections reflections = new Reflections(
+                                    new ConfigurationBuilder()
+                                        .addUrls(ClasspathHelper.forPackage(packageName, environment.classLoader()))
+                                        .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageName + ".")))
+                                        .setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner())
+                                );
                                 classes.addAll(
                                     reflections
                                         .getStore()
