@@ -24,8 +24,12 @@ using an older version of Play Framework, think to use the right plugin version.
 
 ### Play Framework 2.7.x
 
+**Note:** Since the version 19.10u1, the plugin add support for scala 2.13 and drop the support for scala 2.11.
+The last version available for scala 2.11 is the 19.10.
+
 | Plugin  | Min. Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
 |---------|---------------------|-----------|-------------|-----------------|
+| 19.10u1 | 2.7.3               | 11.45.1   | 11.45.1     | 11.21.1         |
 | 19.10   | 2.7.3               | 11.45.1   | 11.45.1     | 11.21.1         |
 
 ### Play Framework 2.6.x

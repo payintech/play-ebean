@@ -1,7 +1,7 @@
 import com.typesafe.sbt.SbtPgp.autoImportImpl.usePgpKeyHex
 import sbt.Keys.{publishMavenStyle, publishTo}
 import sbt.inc.Analysis
-import interplay.ScalaVersions._
+import interplay.ScalaVersions.scala212
 
 val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.7.3"))
 val PlayEnhancerVersion = "1.2.2"
@@ -9,6 +9,7 @@ val EbeanVersion = "11.45.1"
 val EbeanAgentVersion = "11.45.1"
 val EbeanDBMigrationVersion = "11.21.1"
 val TypesafeConfigVersion = "1.3.4"
+val scala213 = "2.13.0"
 
 lazy val root = project
   .in(file("."))
@@ -70,7 +71,7 @@ lazy val core = project
     description := "Play Ebean module",
     organization := "com.payintech",
     homepage := Some(url(s"https://github.com/payintech/play-ebean")),
-    crossScalaVersions := Seq(scala211, scala212),
+    crossScalaVersions := Seq(scala212, scala213),
     libraryDependencies ++= playEbeanDeps,
     compile in Compile := enhanceEbeanClasses(
       (dependencyClasspath in Compile).value,
