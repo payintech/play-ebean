@@ -1,7 +1,8 @@
 package play.db.ebean.dbmigration
 
-import play.api._
+import org.slf4j.{Logger, LoggerFactory}
 import play.api.inject._
+import play.api.{Configuration, Environment}
 
 /**
   * PlayModule.
@@ -11,7 +12,15 @@ import play.api.inject._
   */
 class PlayModule extends Module {
 
-  def bindings(environment: Environment, configuration: Configuration) = Seq(
-    bind[PlayInitializer].toSelf.eagerly
-  )
+  /**
+    * @since 20.02.25
+    */
+  private val logger: Logger = LoggerFactory.getLogger(this.getClass);
+
+  def bindings(environment: Environment, configuration: Configuration) = {
+    this.logger.trace("Loading module DBMigration")
+    Seq(
+      bind[PlayInitializer].toSelf.eagerly
+    )
+  }
 }

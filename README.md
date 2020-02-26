@@ -22,6 +22,12 @@ databases: CockroachDB, MariaDB, MSSQL, MySQL, PostgreSQL, SQLite, ...
 The plugin is built against the latest versions of Play Framework. If you are
 using an older version of Play Framework, think to use the right plugin version.
 
+### Play Framework 2.8.x
+
+| Plugin  | Min. Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
+|---------|---------------------|-----------|-------------|-----------------|
+| 20.02   | 2.8.0               | 12.1.13   | 12.1.12     | 12.1.4          |
+
 ### Play Framework 2.7.x
 
 **Note:** Since the version 19.10u1, the plugin add support for scala 2.13 and drop the support for scala 2.11.

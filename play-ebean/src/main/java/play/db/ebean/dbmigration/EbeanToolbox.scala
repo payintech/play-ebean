@@ -37,7 +37,7 @@ object EbeanToolbox {
     if (forceKey != null && forceKey.trim.nonEmpty && allowAlreadyProcessedFiles) { //TODO: Remove?
       try {
         ebeanServer
-          .createSqlUpdate(s"DELETE FROM db_migration WHERE id >= (SELECT MAX(id) FROM db_migration WHERE mversion LIKE '${forceKey.trim.replace("%", "")}')")
+          .sqlUpdate(s"DELETE FROM db_migration WHERE id >= (SELECT MAX(id) FROM db_migration WHERE mversion LIKE '${forceKey.trim.replace("%", "")}')")
           .execute()
       } catch {
         case ex@(_: PersistenceException | _: SQLException) =>

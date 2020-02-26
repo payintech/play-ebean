@@ -1,7 +1,9 @@
 package play.db.ebean.dbmigration
 
 import javax.inject.{Inject, Singleton}
-import play.api.{Configuration, Environment, Logger, Mode}
+import org.slf4j.{Logger, LoggerFactory}
+import play.api.db.evolutions.ApplicationEvolutions
+import play.api.{Configuration, Environment, Mode}
 import play.core.WebCommands
 
 /**
@@ -12,7 +14,12 @@ import play.core.WebCommands
   */
 @Singleton
 class PlayInitializer @Inject()
-(configuration: Configuration, environment: Environment, webCommands: WebCommands) {
+(configuration: Configuration, environment: Environment, webCommands: WebCommands, applicationEvolutions: ApplicationEvolutions) {
+
+  /**
+    * @since 20.02.25
+    */
+  private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   /**
     * @since 17.01.30
@@ -54,6 +61,10 @@ class PlayInitializer @Inject()
     */
   def onStart(): Unit = {
     if (this.isEnabled) {
+      if (!applicationEvolutions.upToDate) {
+        logger.warn("Database is not up to date. Skipping db-migration")
+        return
+      }
       val maybeSubKeys = configuration.getOptional[Configuration]("ebean.servers")
       if (maybeSubKeys.isDefined) maybeSubKeys.get.subKeys.foreach(key => {
         val changedMigrationResource = EbeanToolbox.checkEbeanServerState(
@@ -69,8 +80,8 @@ class PlayInitializer @Inject()
               s"""▅▆▇█ ${res.getLocation.split("/").takeRight(1).apply(0)} █▇▆▅
                  |${res.getContent}
                  |
-                        |
-                        |""".stripMargin
+                 |
+                 |""".stripMargin
             )
           }
           if (data.nonEmpty) {
@@ -78,7 +89,7 @@ class PlayInitializer @Inject()
             webCommands.addHandler(ebeanMigrationWC)
             val forceFrom = changedMigrationResource.toStream.find(k => !k.isRepeatable).map(k => k.key())
             if (this.autoApply) {
-              Logger.info(s"Applying migration on database '$key'")
+              logger.info(s"Applying migration on database '$key'")
               EbeanToolbox.migrateEbeanServer(
                 this.platformName,
                 this.migrationPath,

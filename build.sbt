@@ -1,14 +1,14 @@
 import com.typesafe.sbt.SbtPgp.autoImportImpl.usePgpKeyHex
+import interplay.ScalaVersions.scala212
 import sbt.Keys.{publishMavenStyle, publishTo}
 import sbt.inc.Analysis
-import interplay.ScalaVersions.scala212
 
-val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.7.3"))
+val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.8.0"))
 val PlayEnhancerVersion = "1.2.2"
-val EbeanVersion = "11.45.1"
-val EbeanAgentVersion = "11.45.1"
-val EbeanDBMigrationVersion = "11.21.1"
-val TypesafeConfigVersion = "1.3.4"
+val EbeanVersion = "12.1.13"
+val EbeanAgentVersion = "12.1.12"
+val EbeanDBMigrationVersion = "12.1.4"
+val TypesafeConfigVersion = "1.4.0"
 val scala213 = "2.13.0"
 
 lazy val root = project
