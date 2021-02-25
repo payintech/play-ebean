@@ -1,13 +1,12 @@
 package play.db.ebean.dbmigration
 
-import java.sql.SQLException
-
-import io.ebean.Ebean
 import io.ebean.migration.runner.LocalMigrationResource
 import io.ebean.migration.{MigrationConfig, MigrationRunner}
-import javax.persistence.PersistenceException
+import io.ebean.{DB, Ebean}
 import play.api.{Environment, Mode}
 
+import java.sql.SQLException
+import javax.persistence.PersistenceException
 import scala.collection.JavaConverters._
 
 /**
@@ -32,7 +31,7 @@ object EbeanToolbox {
     */
   def migrateEbeanServer(platformName: String, migrationPath: String, environment: Environment,
                          serverName: String, forceKey: String, allowAlreadyProcessedFiles: Boolean): Unit = {
-    val ebeanServer = Ebean.getServer(serverName)
+    val ebeanServer = DB.byName(serverName)
 
     if (forceKey != null && forceKey.trim.nonEmpty && allowAlreadyProcessedFiles) { //TODO: Remove?
       try {
@@ -152,8 +151,6 @@ object EbeanToolbox {
       s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName-$mode",
       s"$migrationPath${if (!migrationPath.endsWith("/")) "/"}$serverName"
     )
-    folderToTry
-      .filter(folder => environment.getFile("conf/" + folder).isDirectory)
-      .lift(0)
+    folderToTry.find(folder => environment.getFile("conf/" + folder).isDirectory)
   }
 }

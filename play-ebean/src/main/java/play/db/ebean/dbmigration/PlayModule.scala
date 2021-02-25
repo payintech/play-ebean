@@ -17,7 +17,7 @@ class PlayModule extends Module {
     */
   private val logger: Logger = LoggerFactory.getLogger(this.getClass);
 
-  def bindings(environment: Environment, configuration: Configuration) = {
+  def bindings(environment: Environment, configuration: Configuration): Seq[Binding[PlayInitializer]] = {
     this.logger.trace("Loading module DBMigration")
     Seq(
       bind[PlayInitializer].toSelf.eagerly

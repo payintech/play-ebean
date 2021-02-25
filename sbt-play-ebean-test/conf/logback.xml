@@ -31,13 +31,16 @@
   <logger name="play.db.ebean.dbmigration" level="DEBUG"/>
   <logger name="org.avaje.ebean.Cluster" level="DEBUG"/>
 
+  <logger name="ebean" level="DEBUG"/>
+  <logger name="models" level="DEBUG"/>
+
   <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
   <logger name="io.ebean.config.PropertyMapLoader" level="OFF"/>
   <logger name="io.ebeaninternal.server.core.XmlConfigLoader" level="OFF"/>
   <logger name="io.ebeaninternal.server.lib.BackgroundThread" level="OFF"/>
   <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF"/>
 
-  <root level="WARN">
+  <root level="INFO">
     <appender-ref ref="ASYNCFILE"/>
     <appender-ref ref="ASYNCSTDOUT"/>
   </root>

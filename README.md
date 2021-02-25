@@ -1,9 +1,8 @@
 # play-ebean
 
-[![Latest release](https://img.shields.io/badge/latest_release-19.10-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-21.02-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
 [![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202%2E0-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
-
 
 This module provides Ebean support for Play Framework 2.5 and superior.
 
@@ -11,27 +10,23 @@ This module provides Ebean support for Play Framework 2.5 and superior.
 
 ## About this project
 
-This project was forked from the original repository [playframework/play-ebean](https://github.com/playframework/play-ebean).
-It allows usage of Ebean ORM and Ebean Migration into a Play Framework project. Ebean is compatible with all major
-databases: CockroachDB, MariaDB, MSSQL, MySQL, PostgreSQL, SQLite, ...
-
-
+This project was forked from the original repository [playframework/play-ebean](https://github.com/playframework/play-ebean). It allows usage of Ebean ORM and Ebean Migration into
+a Play Framework project. Ebean is compatible with all major databases: CockroachDB, MariaDB, MSSQL, MySQL, PostgreSQL, SQLite, ...
 
 ## Version
 
-The plugin is built against the latest versions of Play Framework. If you are
-using an older version of Play Framework, think to use the right plugin version.
+The plugin is built against the latest versions of Play Framework. If you are using an older version of Play Framework, think to use the right plugin version.
 
 ### Play Framework 2.8.x
 
 | Plugin  | Min. Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
 |---------|---------------------|-----------|-------------|-----------------|
 | 20.02   | 2.8.0               | 12.1.13   | 12.1.12     | 12.1.4          |
+| 21.02   | 2.8.0               | 12.7.1    | 12.7.1      | 12.4.0          |
 
 ### Play Framework 2.7.x
 
-**Note:** Since the version 19.10u1, the plugin add support for scala 2.13 and drop the support for scala 2.11.
-The last version available for scala 2.11 is the 19.10.
+**Note:** Since the version 19.10u1, the plugin add support for scala 2.13 and drop the support for scala 2.11. The last version available for scala 2.11 is the 19.10.
 
 | Plugin  | Min. Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
 |---------|---------------------|-----------|-------------|-----------------|
@@ -71,7 +66,6 @@ The last version available for scala 2.11 is the 19.10.
 | 17.07   | 2.6.1               | 10.4.1    | 10.3.1      | 10.1.11         |
 | 17.06   | 2.6.0               | 10.3.1    | 10.2.1      | 10.1.8          |
 
-
 ### Play Framework 2.5.x
 
 | Plugin | Min. Play Framework | Ebean ORM | Ebean Agent | Ebean Migration |
@@ -84,24 +78,19 @@ The last version available for scala 2.11 is the 19.10.
 | 16.12  | 2.5.10              | 9.3.1     | 8.2.1       | -               |
 | 16.11  | 2.5.10              | 9.1.2     | 8.1.1       | -               |
 
-
 ## How to use
-
 
 ### Add the module to your Play application
 
-play-ebean can be easily added to your Play application by adding the following line in the file `project/plugin.sbt`.
-You have to replace _YY.MM_ with the release number you want to use from available 
+play-ebean can be easily added to your Play application by adding the following line in the file `project/plugin.sbt`. You have to replace _YY.MM_ with the release number you want
+to use from available
 [releases](https://github.com/payintech/play-ebean/releases).
 
 ```
 addSbtPlugin("com.payintech" % "sbt-play-ebean" % "YY.MM")
 ```
 
-**Note:** If you are already using `sbt-play-ebean` provided by `com.typesafe.sbt`, you
-have to comment or remove the line to avoid any conflicts.
-
-
+**Note:** If you are already using `sbt-play-ebean` provided by `com.typesafe.sbt`, you have to comment or remove the line to avoid any conflicts.
 
 ### Configure the module
 
@@ -226,35 +215,27 @@ ebean {
 }
 ```
 
-
-
 ### Override migration mode
 
-In case you need to use run "Dev" migration scripts when your Play application
-run on "Prod" mode, you could use the environment variable `EBEAN_MIGRATION_MODE`
+In case you need to use run "Dev" migration scripts when your Play application run on "Prod" mode, you could use the environment variable `EBEAN_MIGRATION_MODE`
 to override the default value with _Dev_, _Test_, _Prod_ or whatever alphanumeric.
-
-
 
 ### Override Ebean version
 
-In case you need to use a newest version of Ebean, you have the possibility
-to override built-in Ebean version by adding these lines in your `build.sbt`
+In case you need to use a newest version of Ebean, you have the possibility to override built-in Ebean version by adding these lines in your `build.sbt`
 file.
 
 ```sbt
 libraryDependencies ++= Seq(
   ...
-  "io.ebean" % "ebean" % "X.Y.Z"
+"io.ebean" % "ebean" % "X.Y.Z"
 )
 
 dependencyOverrides ++= Seq(
   ...
-  "io.ebean" % "ebean" % "X.Y.Z"
+"io.ebean" % "ebean" % "X.Y.Z"
 )
 ```
-
-
 
 ## License
 

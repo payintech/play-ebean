@@ -3,7 +3,7 @@
  */
 package play.db.ebean.orm;
 
-import io.ebean.config.ServerConfig;
+import io.ebean.config.DatabaseConfig;
 
 import java.util.Map;
 
@@ -28,5 +28,5 @@ public interface EbeanConfig {
      * @return The server configurations
      * @since 14.11.27
      */
-    Map<String, ServerConfig> serverConfigs();
+    Map<String, DatabaseConfig> serverConfigs();
 }

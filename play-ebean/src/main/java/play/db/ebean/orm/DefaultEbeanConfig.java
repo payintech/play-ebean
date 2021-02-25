@@ -5,7 +5,7 @@ package play.db.ebean.orm;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigOrigin;
-import io.ebean.EbeanServerFactory;
+import io.ebean.DatabaseFactory;
 import io.ebean.config.*;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -47,7 +47,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
      *
      * @since 14.11.27
      */
-    private final Map<String, ServerConfig> serverConfigs;
+    private final Map<String, DatabaseConfig> serverConfigs;
 
     /**
      * Build a pre-configured instance.
@@ -56,7 +56,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
      * @param serverConfigs The server configuration
      * @since 14.11.27
      */
-    public DefaultEbeanConfig(final String defaultServer, final Map<String, ServerConfig> serverConfigs) {
+    public DefaultEbeanConfig(final String defaultServer, final Map<String, DatabaseConfig> serverConfigs) {
         this.defaultServer = defaultServer;
         this.serverConfigs = serverConfigs;
     }
@@ -67,7 +67,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
     }
 
     @Override
-    public Map<String, ServerConfig> serverConfigs() {
+    public Map<String, DatabaseConfig> serverConfigs() {
         return this.serverConfigs;
     }
 
@@ -122,7 +122,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
          * @param t       The current exception
          * @since 17.07.06
          */
-        private void throwConfigurationException(final Option<ConfigOrigin> origin, final String message, final Throwable t) {
+        private static void throwConfigurationException(final Option<ConfigOrigin> origin, final String message, final Throwable t) {
             throw new PlayException.ExceptionSource(
                 "Configuration error",
                 message,
@@ -168,7 +168,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
          * @since 14.11.27
          */
         EbeanConfig parse() {
-            final Map<String, ServerConfig> serverConfigs = new HashMap<>();
+            final Map<String, DatabaseConfig> serverConfigs = new HashMap<>();
 
             if (this.configuration.hasPathOrNull("ebean.clustering")) {
                 final Config playEbeanClusteringCfg = this.configuration.getConfig("ebean.clustering");
@@ -192,7 +192,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
                     }
                     containerConfig.setActive(true);
                     containerConfig.setProperties(properties);
-                    EbeanServerFactory.initialiseContainer(containerConfig);
+                    DatabaseFactory.initialiseContainer(containerConfig);
                 }
             }
 
@@ -200,7 +200,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
                 final Config playEbeanSrvCfg = this.configuration.getConfig("ebean.servers");
                 playEbeanSrvCfg.root().keySet().forEach(serverName -> {
                     final Config ebeanServerConfig = playEbeanSrvCfg.getConfig(serverName);
-                    final ServerConfig serverConfig = new ServerConfig();
+                    final DatabaseConfig serverConfig = new DatabaseConfig();
                     serverConfig.setName(serverName);
                     serverConfig.loadFromProperties();
                     if (serverName.compareTo("default") == 0) {
@@ -254,7 +254,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
                             final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers" + serverName + ".settings") ?
                                 Option.apply(this.configuration.getValue("ebean.servers" + serverName + ".settings").origin()) :
                                 Option.apply(this.configuration.root().origin());
-                            throwConfigurationException(origin, ex.getMessage(), ex);
+                            EbeanConfigParser.throwConfigurationException(origin, ex.getMessage(), ex);
                         }
                     } else {
                         serverConfig.setDocStoreOnly(false);
@@ -268,7 +268,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
                                 final String packageName = load.substring(0, load.length() - 2);
                                 final Reflections reflections = new Reflections(
                                     new ConfigurationBuilder()
-                                        .addUrls(ClasspathHelper.forPackage(packageName, environment.classLoader()))
+                                        .addUrls(ClasspathHelper.forPackage(packageName, this.environment.classLoader()))
                                         .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(packageName + ".")))
                                         .setScanners(new TypeElementsScanner(), new TypeAnnotationsScanner(), new SubTypesScanner())
                                 );
@@ -288,11 +288,11 @@ public class DefaultEbeanConfig implements EbeanConfig {
                     if (ebeanServerConfig.hasPath("docstore")) {
                         try {
                             forName("io.ebeanservice.elastic.ElasticDocumentStore");
-                        } catch (ClassNotFoundException ex) {
+                        } catch (final ClassNotFoundException ex) {
                             final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers" + serverName + ".docstore") ?
                                 Option.apply(this.configuration.getValue("ebean.servers" + serverName + ".docstore").origin()) :
                                 Option.apply(this.configuration.root().origin());
-                            throwConfigurationException(origin, ex.getMessage(), ex);
+                            EbeanConfigParser.throwConfigurationException(origin, ex.getMessage(), ex);
                         }
                         try {
                             final Config playEbeanSrvDocStoreCfg = ebeanServerConfig.getConfig("docstore");
@@ -329,7 +329,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
                             final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers" + serverName + ".docstore") ?
                                 Option.apply(this.configuration.getValue("ebean.servers" + serverName + ".docstore").origin()) :
                                 Option.apply(this.configuration.root().origin());
-                            throwConfigurationException(origin, ex.getMessage(), ex);
+                            EbeanConfigParser.throwConfigurationException(origin, ex.getMessage(), ex);
                         }
                     }
 
@@ -364,7 +364,7 @@ public class DefaultEbeanConfig implements EbeanConfig {
          * @param serverConfig The server configuration to apply
          * @since 14.11.27
          */
-        private void setServerConfigDataSource(final String key, final ServerConfig serverConfig) {
+        private void setServerConfigDataSource(final String key, final DatabaseConfig serverConfig) {
             try {
                 serverConfig.setDataSource(
                     new WrappingDatasource(
@@ -373,11 +373,11 @@ public class DefaultEbeanConfig implements EbeanConfig {
                             .getDataSource()
                     )
                 );
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers." + key) ?
                     Option.apply(this.configuration.getValue("ebean.servers." + key).origin()) :
                     Option.apply(this.configuration.root().origin());
-                throwConfigurationException(origin, ex.getMessage(), ex);
+                EbeanConfigParser.throwConfigurationException(origin, ex.getMessage(), ex);
             }
         }
 
@@ -389,16 +389,16 @@ public class DefaultEbeanConfig implements EbeanConfig {
          * @param classes      The class to add
          * @since 14.11.27
          */
-        private void addModelClassesToServerConfig(final String key, final ServerConfig serverConfig,
+        private void addModelClassesToServerConfig(final String key, final DatabaseConfig serverConfig,
                                                    final Set<String> classes) {
             for (final String clazz : classes) {
                 try {
                     serverConfig.addClass(forName(clazz, true, this.environment.classLoader()));
-                } catch (Throwable ex) {
+                } catch (final Throwable ex) {
                     final Option<ConfigOrigin> origin = this.configuration.hasPath("ebean.servers." + key) ?
                         Option.apply(this.configuration.getValue("ebean.servers." + key).origin()) :
                         Option.apply(this.configuration.root().origin());
-                    throwConfigurationException(
+                    EbeanConfigParser.throwConfigurationException(
                         origin,
                         "Cannot register class [" + clazz + "] in Ebean server",
                         ex
@@ -439,19 +439,19 @@ public class DefaultEbeanConfig implements EbeanConfig {
              * @throws java.sql.SQLException If a database connection error occurs
              * @since 14.11.27
              */
-            java.sql.Connection wrap(final java.sql.Connection connection) throws java.sql.SQLException {
+            static java.sql.Connection wrap(final java.sql.Connection connection) throws java.sql.SQLException {
                 connection.setAutoCommit(false);
                 return connection;
             }
 
             @Override
             public java.sql.Connection getConnection() throws java.sql.SQLException {
-                return this.wrap(this.wrapped.getConnection());
+                return WrappingDatasource.wrap(this.wrapped.getConnection());
             }
 
             @Override
             public java.sql.Connection getConnection(final String username, final String password) throws java.sql.SQLException {
-                return this.wrap(this.wrapped.getConnection(username, password));
+                return WrappingDatasource.wrap(this.wrapped.getConnection(username, password));
             }
 
             @Override

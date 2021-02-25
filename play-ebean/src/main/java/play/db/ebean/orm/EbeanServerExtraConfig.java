@@ -1,7 +1,7 @@
 package play.db.ebean.orm;
 
 import com.typesafe.config.Config;
-import io.ebean.config.ServerConfig;
+import io.ebean.config.DatabaseConfig;
 
 /**
  * Allow third party app to configure Ebean server.
@@ -17,5 +17,5 @@ public interface EbeanServerExtraConfig {
      * @param ebeanServerConfig Handle to the Ebean server configuration
      * @param playConfig        Handle to Play configuration
      */
-    void applyExtraConfiguration(final ServerConfig ebeanServerConfig, final Config playConfig);
+    void applyExtraConfiguration(final DatabaseConfig ebeanServerConfig, final Config playConfig);
 }

@@ -5,11 +5,12 @@ import sbt.inc.Analysis
 
 val PlayVersion = playVersion(sys.props.getOrElse("play.version", "2.8.0"))
 val PlayEnhancerVersion = "1.2.2"
-val EbeanVersion = "12.1.13"
-val EbeanAgentVersion = "12.1.12"
-val EbeanDBMigrationVersion = "12.1.4"
+val EbeanVersion = "12.7.1"
+val EbeanAgentVersion = "12.7.1"
+val EbeanDDLGenerator = "12.7.1"
+val EbeanDBMigrationVersion = "12.4.0"
 val TypesafeConfigVersion = "1.4.0"
-val scala213 = "2.13.0"
+val scala213 = "2.13.4"
 
 lazy val root = project
   .in(file("."))
@@ -189,6 +190,7 @@ def playEbeanDeps = Seq(
   "io.ebean" % "ebean" % EbeanVersion,
   "io.ebean" % "ebean-agent" % EbeanAgentVersion,
   "io.ebean" % "ebean-migration" % EbeanDBMigrationVersion,
+  "io.ebean" % "ebean-ddl-generator" % EbeanDDLGenerator,
   "com.typesafe.play" %% "play-test" % PlayVersion % Test
 ) ++ reflectionDeps
 
