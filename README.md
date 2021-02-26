@@ -1,7 +1,7 @@
 # play-ebean
 
 [![Latest release](https://img.shields.io/badge/latest_release-21.02-orange.svg?style=flat)](https://github.com/payintech/play-ebean/releases)
-[![Build Status](https://travis-ci.org/payintech/play-ebean.svg?branch=master)](https://travis-ci.org/payintech/play-ebean)
+[![Build Status](https://travis-ci.com/payintech/play-ebean.svg?branch=master)](https://travis-ci.com/payintech/play-ebean)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202%2E0-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
 
 This module provides Ebean support for Play Framework 2.5 and superior.
@@ -228,12 +228,12 @@ file.
 ```sbt
 libraryDependencies ++= Seq(
   ...
-"io.ebean" % "ebean" % "X.Y.Z"
+  "io.ebean" % "ebean" % "X.Y.Z"
 )
 
 dependencyOverrides ++= Seq(
   ...
-"io.ebean" % "ebean" % "X.Y.Z"
+  "io.ebean" % "ebean" % "X.Y.Z"
 )
 ```
 
