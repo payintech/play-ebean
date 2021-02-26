@@ -2,7 +2,7 @@ language: scala
 sudo: false
 
 jdk:
-  - oraclejdk8
+  - openjdk8
 
 script:
   - sbt --error +publishLocal +plugin/publishLocal
