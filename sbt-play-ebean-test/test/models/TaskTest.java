@@ -1,6 +1,13 @@
+/*
+ * Copyright (C) 2014 - 2021 PayinTech, SAS - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ */
+
 package models;
 
-import io.ebean.Ebean;
+import io.ebean.DB;
+import org.junit.Assert;
 import org.junit.Test;
 import play.Application;
 import play.test.Helpers;
@@ -12,10 +19,13 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * The type Task test.
+ */
 public class TaskTest extends WithApplication {
 
     protected Application provideApplication() {
-        final Map<String, Object> appConfig = new HashMap<String, Object>() {{
+        final Map<String, Object> appConfig = new HashMap<>() {{
             put("ebean.servers.default.enhancement", new ArrayList<String>(){{
                 add("models.*");
             }});
@@ -24,6 +34,9 @@ public class TaskTest extends WithApplication {
         return Helpers.fakeApplication(appConfig);
     }
 
+    /**
+     * Save and find.
+     */
     @Test
     public void saveAndFind() {
         Task task = new Task();
@@ -33,11 +46,15 @@ public class TaskTest extends WithApplication {
         task.save();
 
         Task saved = Task.find.byId(10L);
-        assertEquals("Hello", saved.name);
+        Assert.assertNotNull(saved);
+        Assert.assertEquals("Hello", saved.name);
     }
 
+    /**
+     * Default server.
+     */
     @Test
     public void defaultServer() {
-        assertEquals("default", Ebean.getDefaultServer().getName());
+        assertEquals("default", DB.getDefault().getName());
     }
 }

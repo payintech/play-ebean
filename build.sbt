@@ -9,7 +9,7 @@ val EbeanVersion = "12.7.1"
 val EbeanAgentVersion = "12.7.1"
 val EbeanDDLGenerator = "12.7.1"
 val EbeanDBMigrationVersion = "12.4.0"
-val TypesafeConfigVersion = "1.4.0"
+val TypesafeConfigVersion = "1.4.1"
 val scala213 = "2.13.4"
 
 lazy val root = project
