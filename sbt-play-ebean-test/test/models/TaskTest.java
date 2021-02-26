@@ -25,11 +25,10 @@ import static org.junit.Assert.assertEquals;
 public class TaskTest extends WithApplication {
 
     protected Application provideApplication() {
-        final Map<String, Object> appConfig = new HashMap<>() {{
-            put("ebean.servers.default.enhancement", new ArrayList<String>(){{
-                add("models.*");
-            }});
-        }};
+        final Map<String, Object> appConfig = new HashMap<>();
+        appConfig.put("ebean.servers.default.enhancement", new ArrayList<String>() {{
+            add("models.*");
+        }});
         appConfig.putAll(Helpers.inMemoryDatabase());
         return Helpers.fakeApplication(appConfig);
     }
